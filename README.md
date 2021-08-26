@@ -21,7 +21,7 @@ CarPlay 让你能够更智能、更安全地在车内使用 iPhone，它可以�
 
 https://developer.apple.com/wwdc16/722
 
-**概览：**CarPlay 车载让你能够更智能、更安全地在车内使用 iPhone。了解 CarPlay 车载的工作方式，以及如何设计你的车载信息娱乐系统来与 iPhone 密切协作。了解通过将 CarPlay 车载与车辆原生系统整合来打造出色用户体验的最佳做法。
+**概览**：CarPlay 车载让你能够更智能、更安全地在车内使用 iPhone。了解 CarPlay 车载的工作方式，以及如何设计你的车载信息娱乐系统来与 iPhone 密切协作。了解通过将 CarPlay 车载与车辆原生系统整合来打造出色用户体验的最佳做法。
 
 该 Session 是面向汽车制造商的，主要内容是：
 
@@ -64,7 +64,7 @@ https://developer.apple.com/wwdc16/722
   * [在 CarPlay 中显示内容](https://developer.apple.com/documentation/carplay/displaying_content_in_carplay?language=objc)
   * [兼容 iOS13 及更早 iOS 系统](https://developer.apple.com/documentation/carplay/supporting_previous_versions_of_ios?language=objc)
 * [CarPlay - App 编程指南](https://developer.apple.com/carplay/documentation/CarPlay-App-Programming-Guide.pdf)
-* [CarPlay - 适用车型](#Bdvd9)
+* [CarPlay - 适用车型](https://www.apple.com.cn/ios/carplay/available-models/)
 
 
 
