@@ -1,6 +1,4 @@
 # iOS-CarPlay
-记录开发 CarPlay 的点滴。
-
 ## CarPlay 是什么
 
 CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用。其前身是叫 iOS in the Car，2014 年更名为 CarPlay。
