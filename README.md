@@ -23,7 +23,7 @@ https://developer.apple.com/wwdc16/722
 
 **概览**：CarPlay 车载让你能够更智能、更安全地在车内使用 iPhone。了解 CarPlay 车载的工作方式，以及如何设计你的车载信息娱乐系统来与 iPhone 密切协作。了解通过将 CarPlay 车载与车辆原生系统整合来打造出色用户体验的最佳做法。
 
-该 Session 是面向汽车制造商的，主要内容是：
+该 Session 的主讲师为一个 Apple 汽车体验工程师和一个 Apple 设计工程师，是面向汽车制造商的，主要内容是：
 
 * 介绍了 CarPlay 以及它的工作方式
 * 如何连接：分为有线和无线（Wi-Fi、蓝牙）
