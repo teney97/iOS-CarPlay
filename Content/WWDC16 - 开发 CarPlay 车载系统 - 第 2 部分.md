@@ -9,12 +9,10 @@ https://developer.apple.com/wwdc16/723
 * 系统概览
 
   * CarPlay sub-system
-
   * Native sub-system
-
   * Hardware and system resources
 
-    ![image.png](https://cdn.nlark.com/yuque/0/2021/png/12376889/1630047713452-a08c393d-31f4-43cd-8fd6-fa369981b074.png?x-oss-process=image%2Fresize%2Cw_752%2Climit_0)
+![image.png](https://cdn.nlark.com/yuque/0/2021/png/12376889/1630054163254-df96d547-e501-43d9-a75e-522ccbe7a663.png?x-oss-process=image%2Fresize%2Cw_750%2Climit_0)
 
 * 音量管理
 
@@ -26,12 +24,9 @@ https://developer.apple.com/wwdc16/723
 
     * mainScreen：访问汽车显示器
     * mainAudio：访问扬声器和麦克风
-
-    ![image.png](https://cdn.nlark.com/yuque/0/2021/png/12376889/1630050877027-7f1b91af-5a94-4f0d-b793-3f5d5eb4acd6.png)
-
-    
-
     * Alternate Audio：没有被管理，基本上都是可用的，所以不需要占用或借用它
+
+![image.png](https://cdn.nlark.com/yuque/0/2021/png/12376889/1630054215465-84a0ecff-3d7e-4582-9cdd-0faf1687e436.png?x-oss-process=image%2Fresize%2Cw_750%2Climit_0)
 
   * 两种访问方式：
 
