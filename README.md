@@ -19,55 +19,51 @@ CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用。其
 
 ### WWDC16 - 开发 CarPlay 车载系统 - 第 1 部分
 
-https://developer.apple.com/wwdc16/722
-
-**概览**：CarPlay 车载让你能够更智能、更安全地在车内使用 iPhone。了解 CarPlay 车载的工作方式，以及如何设计你的车载信息娱乐系统来与 iPhone 密切协作。了解通过将 CarPlay 车载与车辆原生系统整合来打造出色用户体验的最佳做法。
-
-**总结**：[WWDC16 - 开发 CarPlay 车载系统 - 第 1 部分](https://github.com/teney97/iOS-CarPlay/blob/main/Content/WWDC16%20-%20%E5%BC%80%E5%8F%91%20CarPlay%20%E8%BD%A6%E8%BD%BD%E7%B3%BB%E7%BB%9F%20-%20%E7%AC%AC%201%20%E9%83%A8%E5%88%86.md)
+* **地址**：https://developer.apple.com/wwdc16/722
+* **概览**：CarPlay 车载让你能够更智能、更安全地在车内使用 iPhone。了解 CarPlay 车载的工作方式，以及如何设计你的车载信息娱乐系统来与 iPhone 密切协作。了解通过将 CarPlay 车载与车辆原生系统整合来打造出色用户体验的最佳做法。
+* **总结**：[WWDC16 - 722](https://github.com/teney97/iOS-CarPlay/blob/main/Content/WWDC16%20-%20%E5%BC%80%E5%8F%91%20CarPlay%20%E8%BD%A6%E8%BD%BD%E7%B3%BB%E7%BB%9F%20-%20%E7%AC%AC%201%20%E9%83%A8%E5%88%86.md)
 
 
 ### WWDC16 - 开发 CarPlay 车载系统 - 第 2 部分
 
-https://developer.apple.com/wwdc16/723
-
-**概览**：了解 CarPlay 车载如何与您的车辆信息娱乐系统整合。了解 CarPlay 车载如何与您的车载资源协作，如显示屏、扬声器、麦克风、用户输入、方向盘控制键、仪表盘和传感器等。
-
-**总结**：[WWDC16 - 开发 CarPlay 车载系统 - 第 2 部分](https://github.com/teney97/iOS-CarPlay/blob/main/Content/WWDC16%20-%20%E5%BC%80%E5%8F%91%20CarPlay%20%E8%BD%A6%E8%BD%BD%E7%B3%BB%E7%BB%9F%20-%20%E7%AC%AC%202%20%E9%83%A8%E5%88%86.md)
+* **地址**：https://developer.apple.com/wwdc16/723
+* **概览**：了解 CarPlay 车载如何与您的车辆信息娱乐系统整合。了解 CarPlay 车载如何与您的车载资源协作，如显示屏、扬声器、麦克风、用户输入、方向盘控制键、仪表盘和传感器等。
+* **总结**：[WWDC16 - 723](https://github.com/teney97/iOS-CarPlay/blob/main/Content/WWDC16%20-%20%E5%BC%80%E5%8F%91%20CarPlay%20%E8%BD%A6%E8%BD%BD%E7%B3%BB%E7%BB%9F%20-%20%E7%AC%AC%202%20%E9%83%A8%E5%88%86.md)
 
 
 ### WWDC17 - 开发无线 CarPlay 车载系统
 
-https://developer.apple.com/wwdc17/717
-
-**概览**：无论去向哪里，无线 CarPlay 车载都是旅程的绝佳搭档。无需将 iPhone 从包里或口袋中取出，直接开门上车，轻松开始享受 CarPlay 车载体验。学习如何设计你的 CarPlay 车载系统来以无线方式连接至 iPhone。了解相关的硬件要求、提供出色用户体验的最佳做法，以及如何优化配对和重新连接过程。
+* **地址**：https://developer.apple.com/wwdc17/717
+* **概览**：无论去向哪里，无线 CarPlay 车载都是旅程的绝佳搭档。无需将 iPhone 从包里或口袋中取出，直接开门上车，轻松开始享受 CarPlay 车载体验。学习如何设计你的 CarPlay 车载系统来以无线方式连接至 iPhone。了解相关的硬件要求、提供出色用户体验的最佳做法，以及如何优化配对和重新连接过程。
+* **总结**：
 
 
 ### WWDC17 - 让您的 App 支持 CarPlay 车载
 
-https://developer.apple.com/wwdc17/719
-
-**概览**：了解如何让你的音频、信息、VolP 通话或汽车制造商 App 支持 CarPlay 车载。音频、信息、VolP 通话 App 采用一致的设计，并且为在车内使用进行过优化。汽车制造商 App 提供车辆相关的控制和显示功能，让驾驶员无需离开 CarPlay 车载就能保持互联。探索最佳做法，并了解适用于 CarPlay 车载 App 的工具和框架。
+* **地址**：https://developer.apple.com/wwdc17/719
+* **概览**：了解如何让你的音频、信息、VolP 通话或汽车制造商 App 支持 CarPlay 车载。音频、信息、VolP 通话 App 采用一致的设计，并且为在车内使用进行过优化。汽车制造商 App 提供车辆相关的控制和显示功能，让驾驶员无需离开 CarPlay 车载就能保持互联。探索最佳做法，并了解适用于 CarPlay 车载 App 的工具和框架。
+* **总结**：
 
 
 ### WWDC18 - CarPlay 车载音频和导航 App
 
-https://developer.apple.com/wwdc18/213
-
-**概览**：了解如何更新音频或导航 App 来支持 CarPlay 车载。CarPlay 车载中的 App 针对车用进行了优化，能够自动适应可用的汽车屏幕和输入控制。音频 App 能够输出音乐、新闻、播客等。通过新的 CarPlay 车载框架，导航 App 可以提供详细地图、目的地搜索、逐向导航和用户通知。
+* **地址**：https://developer.apple.com/wwdc18/213
+* **概览**：了解如何更新音频或导航 App 来支持 CarPlay 车载。CarPlay 车载中的 App 针对车用进行了优化，能够自动适应可用的汽车屏幕和输入控制。音频 App 能够输出音乐、新闻、播客等。通过新的 CarPlay 车载框架，导航 App 可以提供详细地图、目的地搜索、逐向导航和用户通知。
+* **总结**：
 
 
 ### WWDC19 - CarPlay 车载系统改进
 
-https://developer.apple.com/wwdc19/252
-
-**概览**：CarPlay 车载让你能够在车内更加智能、安全地使用 iPhone。了解如何更新你的车载系统，以利用 iOS 13 中的新功能。添加对动态变换屏幕尺寸’仪表盘等辅助屏幕，甚至是不规则显示屏的支持。了解如何支持 “嘿 Siri” 来进行免提语音激活。
+* **地址**：https://developer.apple.com/wwdc19/252
+* **概览**：CarPlay 车载让你能够在车内更加智能、安全地使用 iPhone。了解如何更新你的车载系统，以利用 iOS 13 中的新功能。添加对动态变换屏幕尺寸’仪表盘等辅助屏幕，甚至是不规则显示屏的支持。了解如何支持 “嘿 Siri” 来进行免提语音激活。
+* **总结**：
 
 
 ### WWDC20 - 使用 CarPlay 车载系统为你的 App 提速
 
-https://developer.apple.com/wwdc20/10635
-
-**概览**：CarPlay 车载可为用户提供更智能、更安全的 iPhone 车内使用方式。我们将向你展示如何为车辆屏幕打造优质 App，并教你开发电动机车充电、泊车、快速订购食物外卖等类型的 CarPlay 车载 App。此外，我们还会使用现存的音频与通讯 App 作为范例，详细解释如何利用 CarPlay 车载框架的种种改进，制作出更加灵活多变的用户界面。
+* **地址**：https://developer.apple.com/wwdc20/10635
+* **概览**：CarPlay 车载可为用户提供更智能、更安全的 iPhone 车内使用方式。我们将向你展示如何为车辆屏幕打造优质 App，并教你开发电动机车充电、泊车、快速订购食物外卖等类型的 CarPlay 车载 App。此外，我们还会使用现存的音频与通讯 App 作为范例，详细解释如何利用 CarPlay 车载框架的种种改进，制作出更加灵活多变的用户界面。
+* **总结**：
 
 
 ## 相关资料
