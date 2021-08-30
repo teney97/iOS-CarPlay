@@ -35,14 +35,14 @@ CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用。其
 
 * **地址**：https://developer.apple.com/wwdc17/717
 * **概览**：无论去向哪里，无线 CarPlay 车载都是旅程的绝佳搭档。无需将 iPhone 从包里或口袋中取出，直接开门上车，轻松开始享受 CarPlay 车载体验。学习如何设计你的 CarPlay 车载系统来以无线方式连接至 iPhone。了解相关的硬件要求、提供出色用户体验的最佳做法，以及如何优化配对和重新连接过程。
-* **总结**：
+* **总结**：[WWDC17 - 717](https://github.com/teney97/iOS-CarPlay/blob/main/Content/WWDC17%20-%20%E5%BC%80%E5%8F%91%E6%97%A0%E7%BA%BF%20CarPlay%20%E8%BD%A6%E8%BD%BD%E7%B3%BB%E7%BB%9F.md)
 
 
 ### WWDC17 - 让您的 App 支持 CarPlay 车载
 
 * **地址**：https://developer.apple.com/wwdc17/719
 * **概览**：了解如何让你的音频、信息、VolP 通话或汽车制造商 App 支持 CarPlay 车载。音频、信息、VolP 通话 App 采用一致的设计，并且为在车内使用进行过优化。汽车制造商 App 提供车辆相关的控制和显示功能，让驾驶员无需离开 CarPlay 车载就能保持互联。探索最佳做法，并了解适用于 CarPlay 车载 App 的工具和框架。
-* **总结**：
+* **总结**：[WWDC17 - 719](https://github.com/teney97/iOS-CarPlay/blob/main/Content/WWDC17%20-%20%E8%AE%A9%E6%82%A8%E7%9A%84%20App%20%E6%94%AF%E6%8C%81%20CarPlay%20%E8%BD%A6%E8%BD%BD.md)
 
 
 ### WWDC18 - CarPlay 车载音频和导航 App
