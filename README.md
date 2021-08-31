@@ -13,7 +13,18 @@ CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用。其
 * 通信 App （Messaging、VoIP calling）可以发送和接收消息，同时可以配合 Siri 使用。（2017 年引入）
 * 导航 App 可以提供详细的地图、目的地搜索、路线指导和用户通知。
 * 汽车制造商的 App 可以提供特定于车辆的控制和显示，让司机在不离开 CarPlay 的情况下保持联系。
-* iOS 14 新功能，支持 EV 充电、停车和快餐订购 App。此外，所有 CarPlay App 都可以利用 CarPlay 框架提供一致的设计，并针对在汽车中的使用进行了优化。
+* iOS14 新功能，支持 EV 充电、停车和快餐订购 App。此外，所有 CarPlay App 都可以利用 CarPlay 框架提供一致的设计，并针对在汽车中的使用进行了优化。
+
+## CarPlay 重大更新（iOS14）
+
+在 iOS14 中，CarPlay 进行了重大更新，CarPlay framework 提供了一组全新的模板，并对现有模板进行了改进。在这之前 ，构建 CarPlay 音频 App 使用 `MPPlayableContent` API 来实现，系统使用音频元数据（如专辑和歌曲），来组装好播放器UI。而在 iOS14 中这些 API 被废弃而使用全新的模版。所以如果你的 App 还将支持 iOS13，那么`MPPlayableContent` API 和新的模板将同时存在。在 iOS13 及更低版本上，系统将启动`MPPlayableContent` API 的应用。在 iOS14中，则使用音频模板。
+
+iOS13 中，苹果引入了 UIScene 的概念，用于构建多窗口应用。在车载场景下，车机屏幕属于一个新的窗口，使用 UIScene 可以轻松做到这一点。实际上，CarPlay App 必须采用 UIScene 才能使用 CarPlay framework，因此必须从传统的 UIWindow 和 UIApplicationDelegate API 向 UIScene 过渡。
+
+参考：
+
+* [WWDC20 - 使用 CarPlay 车载系统为你的 App 提速](https://developer.apple.com/wwdc20/10635)
+* [WWDC20 内参 - WWDC20 10635 - 使用 CarPlay 车载系统为你的 App 提速](https://xiaozhuanlan.com/topic/7620814593)
 
 ## WWDC
 
@@ -70,7 +81,8 @@ CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用。其
 * **地址**：https://developer.apple.com/wwdc20/10635
 * **时长**：26 分钟
 * **概览**：CarPlay 车载可为用户提供更智能、更安全的 iPhone 车内使用方式。我们将向你展示如何为车辆屏幕打造优质 App，并教你开发电动机车充电、泊车、快速订购食物外卖等类型的 CarPlay 车载 App。此外，我们还会使用现存的音频与通讯 App 作为范例，详细解释如何利用 CarPlay 车载框架的种种改进，制作出更加灵活多变的用户界面。
-* **总结**：
+* **内参**：https://xiaozhuanlan.com/topic/7620814593
+* **总结**：[WWDC20 - 10635](https://github.com/teney97/iOS-CarPlay/blob/main/Content/WWDC20%20-%20使用%20CarPlay%20车载系统为你的%20App%20提速.md)
 
 
 ## 相关资料
