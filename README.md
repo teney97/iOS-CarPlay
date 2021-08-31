@@ -10,7 +10,7 @@ CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用。其
 ## CarPlay 支持哪些 App 及功能
 
 * 音频 App 可以提供音乐、新闻、播客等。
-* 通信 App 可以发送和接收消息，同时可以配合 Siri 使用。
+* 通信 App （Messaging、VoIP calling）可以发送和接收消息，同时可以配合 Siri 使用。（2017 年引入）
 * 导航 App 可以提供详细的地图、目的地搜索、路线指导和用户通知。
 * 汽车制造商的 App 可以提供特定于车辆的控制和显示，让司机在不离开 CarPlay 的情况下保持联系。
 * iOS 14 新功能，支持 EV 充电、停车和快餐订购 App。此外，所有 CarPlay App 都可以利用 CarPlay 框架提供一致的设计，并针对在汽车中的使用进行了优化。
@@ -49,7 +49,7 @@ CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用。其
 
 * **地址**：https://developer.apple.com/wwdc18/213
 * **概览**：了解如何更新音频或导航 App 来支持 CarPlay 车载。CarPlay 车载中的 App 针对车用进行了优化，能够自动适应可用的汽车屏幕和输入控制。音频 App 能够输出音乐、新闻、播客等。通过新的 CarPlay 车载框架，导航 App 可以提供详细地图、目的地搜索、逐向导航和用户通知。
-* **总结**：
+* **总结**：[WWDC18 - 213](https://github.com/teney97/iOS-CarPlay/blob/main/Content/WWDC18%20-%20CarPlay%20%E8%BD%A6%E8%BD%BD%E9%9F%B3%E9%A2%91%E5%92%8C%E5%AF%BC%E8%88%AA%20App.md)
 
 
 ### WWDC19 - CarPlay 车载系统改进
