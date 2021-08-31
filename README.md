@@ -17,7 +17,7 @@ CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用。其
 
 ## CarPlay 重大更新（iOS14）
 
-在 iOS14 中，CarPlay 进行了重大更新，CarPlay framework 提供了一组全新的模板，并对现有模板进行了改进。在这之前 ，构建 CarPlay 音频 App 使用 `MPPlayableContent` API 来实现，系统使用音频元数据（如专辑和歌曲），来组装好播放器UI。而在 iOS14 中这些 API 被废弃而使用全新的模版。所以如果你的 App 还将支持 iOS13，那么`MPPlayableContent` API 和新的模板将同时存在。在 iOS13 及更低版本上，系统将启动`MPPlayableContent` API 的应用。在 iOS14中，则使用音频模板。
+在 iOS14 中，CarPlay 进行了重大更新，CarPlay framework 提供了一组全新的模板，并对现有模板进行了改进。在这之前 ，构建 CarPlay 音频 App 使用 MPPlayableContent API 来实现，系统使用音频元数据（如专辑和歌曲），来组装好播放器 UI。而在 iOS14 中这些 API 被废弃而使用全新的模版。所以如果你的 App 还将支持 iOS13，那么 MPPlayableContent API 和新的模板将同时存在。在 iOS13 及更低版本上，系统将启动 MPPlayableContent API 的应用。在 iOS14中，则使用音频模板。
 
 iOS13 中，苹果引入了 UIScene 的概念，用于构建多窗口应用。在车载场景下，车机屏幕属于一个新的窗口，使用 UIScene 可以轻松做到这一点。实际上，CarPlay App 必须采用 UIScene 才能使用 CarPlay framework，因此必须从传统的 UIWindow 和 UIApplicationDelegate API 向 UIScene 过渡。
 
