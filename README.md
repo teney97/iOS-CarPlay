@@ -62,7 +62,7 @@ CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用。其
 * **地址**：https://developer.apple.com/wwdc19/252
 * **时长**：16 分钟
 * **概览**：CarPlay 车载让你能够在车内更加智能、安全地使用 iPhone。了解如何更新你的车载系统，以利用 iOS 13 中的新功能。添加对动态变换屏幕尺寸、仪表盘等辅助屏幕，甚至是不规则显示屏的支持。了解如何支持 “嘿 Siri” 来进行免提语音激活。
-* **总结**：
+* **总结**：[WWDC19 - 252](https://github.com/teney97/iOS-CarPlay/blob/main/Content/WWDC19%20-%20CarPlay%20%E8%BD%A6%E8%BD%BD%E7%B3%BB%E7%BB%9F%E6%94%B9%E8%BF%9B.md)
 
 
 ### WWDC20 - 使用 CarPlay 车载系统为你的 App 提速
