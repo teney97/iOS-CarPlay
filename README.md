@@ -103,15 +103,10 @@ iOS13 中，苹果引入了 UIScene 的概念，用于构建多窗口应用。�
 * [CarPlay - 介绍](https://www.apple.com.cn/ios/carplay/)
 * [CarPlay - 文档首页](https://developer.apple.com/carplay/)
 * [CarPlay - 设计指南](https://developer.apple.com/design/human-interface-guidelines/carplay/overview/introduction/)
-* [CarPlay - 开发者文档](https://developer.apple.com/documentation/carplay?language=objc
+* [CarPlay - 开发者文档](https://developer.apple.com/documentation/carplay?language=objc)
   * [申请 CarPlay 权限](https://developer.apple.com/documentation/carplay/requesting_the_carplay_entitlements?language=objc)
-
-  * [使用 CarPlay Simulator 运行和调试 CarPlay App](https://developer.apple.com/documentation/carplay/using_the_carplay_simulator?language=objc) 
-
-    需要先申请 CarPlay 权限，创建配置文件后才能使用 CarPlay Simulator，而且审核得没那么快
-
+  * [使用 CarPlay Simulator 运行和调试 CarPlay App](https://developer.apple.com/documentation/carplay/using_the_carplay_simulator?language=objc) （需要先申请 CarPlay 权限，创建配置文件后才能使用 CarPlay Simulator，而且审核得没那么快）
   * [在 CarPlay 中显示内容](https://developer.apple.com/documentation/carplay/displaying_content_in_carplay?language=objc)
-
   * [兼容 iOS13 及更早 iOS 系统](https://developer.apple.com/documentation/carplay/supporting_previous_versions_of_ios?language=objc)
 * [CarPlay - App 编程指南](https://developer.apple.com/carplay/documentation/CarPlay-App-Programming-Guide.pdf)
 * [CarPlay - 适用车型](https://www.apple.com.cn/ios/carplay/available-models/)
