@@ -23,7 +23,7 @@
                 <key>UISceneConfigurationName</key>
                 <string>MyApp—Car</string>
                 <key>UISceneDelegateClassName</key>
-                <string>MyApp.CarPlaySceneDelegate</string>
+                <string>$(PRODUCT_MODULE_NAME).CarPlaySceneDelegate</string>
             </dict>
         </array>
     </dict>
@@ -65,7 +65,98 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
 
   而车机断开连接时，该方法将被调用，在里面可以做一些清理工作。
 
+### 模拟器
 
+```
+defaults write com.apple.iphonesimulator CarPlayExtraOptions -bool YES
+```
+
+### CPTabBarTemplate
+
+```swift
+let tabbarTemplate = CPTabBarTemplate(templates: [])
+tabbarTemplate.delegate = self
+```
+
+可以显示多少个标签取决于 maximumTabCount 属性，取决于 app 种类，音频 app 最多显示 4 个？超过数量会 Crash。
+
+```swift
+/**
+ The maximum number of tabs that your app may display in a @c CPTabBarTemplate,
+ depending on the entitlements that your app declares.
+
+ @warning The system will throw an exception if your app attempts to display more
+ than this number of tabs in your tab bar template.
+ */
+open class var maximumTabCount: Int { get }
+```
+
+可以设置每个标签的 tabTitle 和 tabImage，也可以设置 tabSystemItem 用系统样式（可用样式较少，且没办法自定义文案了）。
+
+```swift
+listTemplate.tabTitle = "推荐"
+listTemplate.tabImage = UIImage(named: "tabbar_home_high")
+
+listTemplate.tabSystemItem = .favorites
+```
+
+这时候就要找 UI 出图了，[CarPlay UI 设计指南](https://developer.apple.com/design/human-interface-guidelines/carplay/icons-and-images/custom-icons/)。
+
+代理方法就一个：
+
+```swift
+@available(iOS 14, *)
+extension CarPlaySceneDelegate: CPTabBarTemplateDelegate {
+    func tabBarTemplate(_ tabBarTemplate: CPTabBarTemplate, didSelect selectedTemplate: CPTemplate) {
+        
+    } 
+}
+```
+
+### CPListTemplate
+
+
+
+### CPListImageRowItem
+
+```swift
+// CPListImageRowItem: CPSelectableListItem: CPListTemplateItem
+let imagesCount = CPMaximumNumberOfGridImages
+let images = Array(repeating: UIImage(named: "AppIcon")!, count: imagesCount)
+let item = CPListImageRowItem(text: "精品推荐", images: images)
+```
+
+![](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211020172346792.png)
+
+### CPListItem
+
+```swift
+let item = CPListItem(text: "Rubber Soul", detailText: "The Beatles", image: UIImage(named: "AppIcon"))
+```
+
+![](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211020172713933.png)
+
+还可以设置右边的图标（自定义 or 系统样式）
+
+```swift
+public init(text: String?, detailText: String?, image: UIImage?, accessoryImage: UIImage?, accessoryType: CPListItemAccessoryType)
+```
+
+系统样式有箭头和 iCloud 两种：
+
+```swift
+public enum CPListItemAccessoryType : Int {
+    case none = 0
+    case disclosureIndicator = 1
+    case cloud = 2
+}
+```
+
+![image-20211020173927139](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211020173927139.png)
+
+![image-20211020173756036](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211020173756036.png)
+
+?Client=Target&Type=Inner&Url=https%3A%2F%2Facth5.babybus.com%2Fplatform%2Fvip-gift&Title=vip&IsHeader=1
 
 
 
@@ -117,13 +208,13 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
 
 使用提供一致的 CarPlay 布局和外观的各种模板来显示你的 App 的内容。
 
-| Templates                                                    | Description                  |
-| ------------------------------------------------------------ | ---------------------------- |
-| [`CPListTemplate`](https://developer.apple.com/documentation/carplay/cplisttemplate?language=objc) | 列表模版，有点类似 tableView |
-| [`CPGridTemplate`](https://developer.apple.com/documentation/carplay/cpgridtemplate?language=objc) |                              |
-| [`CPTabBarTemplate`](https://developer.apple.com/documentation/carplay/cptabbartemplate?language=objc) |                              |
-| [`CPTemplate`](https://developer.apple.com/documentation/carplay/cptemplate?language=objc) |                              |
-| [`CPBarButtonProviding`](https://developer.apple.com/documentation/carplay/cpbarbuttonproviding?language=objc) |                              |
+| Templates                                                    | Description                                                  |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| [`CPListTemplate`](https://developer.apple.com/documentation/carplay/cplisttemplate?language=objc)<br />- [`CPListItem`](https://developer.apple.com/documentation/carplay/cplistitem?language=objc)<br />- [`CPListImageRowItem`](https://developer.apple.com/documentation/carplay/cplistimagerowitem?language=objc)<br />- [`CPMessageListItem`](https://developer.apple.com/documentation/carplay/cpmessagelistitem?language=objc) | 列表模版，有点类似 tableView<br />- 一个通用的、可选择的列表项<br />- 显示一系列图像的列表项<br />- 表示对话或联系人的列表项 |
+| [`CPGridTemplate`](https://developer.apple.com/documentation/carplay/cpgridtemplate?language=objc) |                                                              |
+| [`CPTabBarTemplate`](https://developer.apple.com/documentation/carplay/cptabbartemplate?language=objc) | tabbar 模版                                                  |
+| [`CPTemplate`](https://developer.apple.com/documentation/carplay/cptemplate?language=objc) |                                                              |
+| [`CPBarButtonProviding`](https://developer.apple.com/documentation/carplay/cpbarbuttonproviding?language=objc) |                                                              |
 
 显示一个新的 template，类似 UINavigationController 的 push 方法，调用 CPInterfaceController 的 [`pushTemplate:animated:completion:`](https://developer.apple.com/documentation/carplay/cpinterfacecontroller/3650358-pushtemplate?language=objc)。
 
