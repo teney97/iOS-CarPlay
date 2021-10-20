@@ -3,7 +3,7 @@
 
 CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用。其前身是叫 iOS in the Car，2014 年更名为 CarPlay。
 
-简单地说，如果你的汽车支持 CarPlay，那么当你的汽车（通过数据线、蓝牙、Wi-Fi）连接 iPhone 时，汽车显示屏会自动切换到 CarPlay，iPhone 上所有支持 CarPlay 的 App 会自动显示在 CarPlay 中。CarPlay 上的 App 的用户界面是固定的，由 Apple 设计，内容由 App 自己提供。
+简单地说，如果你的汽车支持 CarPlay，那么当你的汽车（通过数据线、蓝牙、Wi-Fi）连接 iPhone 时，汽车显示屏会自动切换到 CarPlay，iPhone 上所有支持 CarPlay 的 App 会自动显示在 CarPlay 中（你可以在 iPhone 设置中屏蔽指定 App）。CarPlay 上的 App 的用户界面是固定的，由 Apple 设计，内容由 App 自己提供。
 
 控制 CarPlay 主要有 3 种方式：Siri、触屏显示屏、物理按键。
 
@@ -17,7 +17,7 @@ CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用。其
 
 ## CarPlay 重大更新（iOS14）
 
-在 iOS14 中，CarPlay 进行了重大更新，CarPlay framework 提供了一组全新的模板，并对现有模板进行了改进。在这之前 ，构建 CarPlay 音频 App 使用 MediaPlayer framework 的 MPPlayableContent API 来实现，系统使用音频元数据（如专辑和歌曲），来组装好播放器 UI。而在 iOS14 中这些 API 被废弃而使用全新的音频模版。所以如果你的 App 还将支持 iOS13，那么 MPPlayableContent API 和新的模板将同时存在。在 iOS13 及更低版本上，系统将启动 MPPlayableContent API 的应用。在 iOS14中，则使用音频模板。
+在 iOS14 中，CarPlay 进行了重大更新，CarPlay framework 提供了一组全新的模板，并对现有模板进行了改进。在这之前 ，构建 CarPlay 音频 App 使用 MediaPlayer framework 的 MPPlayableContent API 来实现，系统使用音频元数据（如专辑和歌曲），来组装好播放器 UI。而在 iOS14 中这些 API 被废弃而使用全新的音频模版。所以如果你的 App 还将支持 iOS13，那么 MPPlayableContent API 和新的模板将同时存在。在 iOS13 及更低版本上，系统将启动 MPPlayableContent API 的应用。在 iOS14+ 中，则使用音频模板。
 
 iOS13 中，苹果引入了 UIScene 的概念，用于构建多窗口应用。在车载场景下，车机屏幕属于一个新的窗口，使用 UIScene 可以轻松做到这一点。实际上，CarPlay App 必须采用 UIScene 才能使用 CarPlay framework，因此必须从传统的 UIWindow 和 UIApplicationDelegate API 向 UIScene 过渡。
 
@@ -104,12 +104,12 @@ iOS13 中，苹果引入了 UIScene 的概念，用于构建多窗口应用。�
 * [CarPlay - 文档首页](https://developer.apple.com/carplay/)
 * [CarPlay - 设计指南](https://developer.apple.com/design/human-interface-guidelines/carplay/overview/introduction/)
 * [CarPlay - 开发者文档](https://developer.apple.com/documentation/carplay?language=objc)
-  * [申请 CarPlay 权限](https://developer.apple.com/documentation/carplay/requesting_the_carplay_entitlements?language=objc)
+  * [申请 CarPlay 权限](https://developer.apple.com/documentation/carplay/requesting_the_carplay_entitlements?language=objc)（如果申请了 CarPlay 权限后，启动 CarPlay Simulator 还是没有显示你的 app，看看是不是漏了 “添加权限文件” 步骤还是漏了哪一步）
   * [使用 CarPlay Simulator 运行和调试 CarPlay App](https://developer.apple.com/documentation/carplay/using_the_carplay_simulator?language=objc) （需要先申请 CarPlay 权限，创建配置文件后才能使用 CarPlay Simulator，而且审核得没那么快）
   * [在 CarPlay 中显示内容](https://developer.apple.com/documentation/carplay/displaying_content_in_carplay?language=objc)
   * [兼容 iOS13 及更早 iOS 系统](https://developer.apple.com/documentation/carplay/supporting_previous_versions_of_ios?language=objc)
 * [CarPlay - App 编程指南](https://developer.apple.com/carplay/documentation/CarPlay-App-Programming-Guide.pdf)
 * [CarPlay - 适用车型](https://www.apple.com.cn/ios/carplay/available-models/)
 
-
+![image-20211013141020240](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211013141020240.png)
 
