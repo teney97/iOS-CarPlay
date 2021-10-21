@@ -65,7 +65,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
 
   而车机断开连接时，该方法将被调用，在里面可以做一些清理工作。
 
-### 模拟器
+### 模拟器，设置为 YES 后每次启动，都可以设置屏幕尺寸等参数
 
 ```
 defaults write com.apple.iphonesimulator CarPlayExtraOptions -bool YES
@@ -94,10 +94,13 @@ open class var maximumTabCount: Int { get }
 可以设置每个标签的 tabTitle 和 tabImage，也可以设置 tabSystemItem 用系统样式（可用样式较少，且没办法自定义文案了）。
 
 ```swift
+// 自定义 tab 样式
 listTemplate.tabTitle = "推荐"
 listTemplate.tabImage = UIImage(named: "tabbar_home_high")
-
+// 使用系统 tab 样式，如果同时设置了 tabTitle 和 tabImage， tabSystemItem 不生效
 listTemplate.tabSystemItem = .favorites
+// 显示红点
+listTemplate.showsTabBadge = true
 ```
 
 这时候就要找 UI 出图了，[CarPlay UI 设计指南](https://developer.apple.com/design/human-interface-guidelines/carplay/icons-and-images/custom-icons/)。
@@ -155,8 +158,6 @@ public enum CPListItemAccessoryType : Int {
 ![image-20211020173927139](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211020173927139.png)
 
 ![image-20211020173756036](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211020173756036.png)
-
-?Client=Target&Type=Inner&Url=https%3A%2F%2Facth5.babybus.com%2Fplatform%2Fvip-gift&Title=vip&IsHeader=1
 
 
 
