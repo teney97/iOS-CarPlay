@@ -159,7 +159,22 @@ public enum CPListItemAccessoryType : Int {
 
 ![image-20211020173756036](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211020173756036.png)
 
+### App 图标
 
+https://developer.apple.com/design/human-interface-guidelines/carplay/icons-and-images/app-icon/
+
+### 注意
+
+* CarPlay 不支持 gif 图片，赋值会 Crash，因此不能配置 gif，或者判断如果是 gif 就取第一帧
+* 单例问题，CarPlay 用到了单例类，CarPlay app 关闭，但 iPhone app 没关闭，进程是还在的，单例还未释放，可能会造成一些问题。可以在 didConnect 中初始化单例，在 didDisconnectInterfaceController 中释放单例
+* CarPlay App 崩溃，Xcode 不会 Crash
+* Tabbar，如果取不到图片，title 和 image 都用默认的 “More”
+* 图片大小问题
+* 数据可以存在 CPListItem.userInfo，不需要扩展属性
+* CPListTemplateDelegate 回调没走问题，原因是 delegate 没对象持有而销毁了，在 push 的时候保存一下对象
+* 正在播放页面音频封面不显示问题 https://tieba.baidu.com/p/6276976841
+* CarPlay 模拟器的中英文设置跟随 iPhone 模拟器
+* https://www.sohu.com/a/336034138_120178230
 
 ## API
 
