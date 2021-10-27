@@ -175,6 +175,8 @@ https://developer.apple.com/design/human-interface-guidelines/carplay/icons-and-
 * 正在播放页面音频封面不显示问题 https://tieba.baidu.com/p/6276976841
 * CarPlay 模拟器的中英文设置跟随 iPhone 模拟器
 * https://www.sohu.com/a/336034138_120178230
+* 网络图片大小模糊问题，需要使用 scale
+* 
 
 ## API
 
