@@ -111,4 +111,4 @@ iOS13 中，苹果引入了 UIScene 的概念，用于构建多窗口应用。�
 * [CarPlay - App 编程指南](https://developer.apple.com/carplay/documentation/CarPlay-App-Programming-Guide.pdf)
   * 搜狗机翻版：https://github.com/teney97/iOS-CarPlay/tree/main/Content
 * [CarPlay - 适用车型](https://www.apple.com.cn/ios/carplay/available-models/)
-
+* [CarPlay Music App 示例](https://developer.apple.com/documentation/carplay/integrating_carplay_with_your_music_app?language=objc)
