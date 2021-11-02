@@ -170,13 +170,14 @@ https://developer.apple.com/design/human-interface-guidelines/carplay/icons-and-
 * CarPlay App 崩溃，Xcode 不会 Crash
 * Tabbar，如果取不到图片，title 和 image 都用默认的 “More”
 * 图片大小问题
-* 数据可以存在 CPListItem.userInfo，不需要扩展属性
+* 数据可以存在 CPListItem.userInfo，不需要扩展属性（强引用，需要注意循环引用问题）
 * CPListTemplateDelegate 回调没走问题，原因是 delegate 没对象持有而销毁了，在 push 的时候保存一下对象
 * 正在播放页面音频封面不显示问题 https://tieba.baidu.com/p/6276976841
 * CarPlay 模拟器的中英文设置跟随 iPhone 模拟器
 * https://www.sohu.com/a/336034138_120178230
 * 网络图片大小模糊问题，需要使用 scale
-* 
+* M1 电脑启动 CarPlay app 崩溃问题
+  * 解决方案？是勾选 Simulator App 的 Rosetta 无效
 
 ## API
 
