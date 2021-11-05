@@ -36,7 +36,7 @@ CarPlay 中的所有 App 均可使用的功能：
 
 **集成**
 
-如何你的 App 需要在 CarPlay 上集成：
+如果你的 App 需要在 CarPlay 上集成：
 
 * 需要在 [CarPlay 开发者网站](https://developer.apple.com/carplay) 上申请权限。
 * 需要提供 2x 和 3x 图以适配 CarPlay 在不同车辆上的分辨率和大小，关于 icon 以及界面设计指南，参考以下：
