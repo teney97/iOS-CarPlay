@@ -1,3 +1,5 @@
+
+
 ## 开发 CarPlay 音频 App
 
 ### 使用 UIScene
@@ -165,19 +167,119 @@ https://developer.apple.com/design/human-interface-guidelines/carplay/icons-and-
 
 ### 注意
 
+* 加载与刷新数据的时机
+
 * CarPlay 不支持 gif 图片，赋值会 Crash，因此不能配置 gif，或者判断如果是 gif 就取第一帧
+
 * 单例问题，CarPlay 用到了单例类，CarPlay app 关闭，但 iPhone app 没关闭，进程是还在的，单例还未释放，可能会造成一些问题。可以在 didConnect 中初始化单例，在 didDisconnectInterfaceController 中释放单例
+
 * CarPlay App 崩溃，Xcode 不会 Crash
+
 * Tabbar，如果取不到图片，title 和 image 都用默认的 “More”
+
 * 图片大小问题
+
 * 数据可以存在 CPListItem.userInfo，不需要扩展属性（强引用，需要注意循环引用问题）
+
 * CPListTemplateDelegate 回调没走问题，原因是 delegate 没对象持有而销毁了，在 push 的时候保存一下对象
+
 * 正在播放页面音频封面不显示问题 https://tieba.baidu.com/p/6276976841
+
 * CarPlay 模拟器的中英文设置跟随 iPhone 模拟器
+
 * https://www.sohu.com/a/336034138_120178230
+
 * 网络图片大小模糊问题，需要使用 scale
+
 * M1 电脑启动 CarPlay app 崩溃问题
-  * 解决方案？是勾选 Simulator App 的 Rosetta 无效
+  * 解决方案？是勾选 Simulator App 的 Rosetta，结果无效
+  * https://issueexplorer.com/issue/mapbox/mapbox-navigation-ios/3355
+  
+* 同步 nowPlayingInfo 的时机：
+
+  * 切换上一首、下一首
+  * 暂停、恢复播放
+  * 跳过片头
+  * 拖动进度
+  * 更新播放速率，涉及到的 nowPlayingInfo.key : `MPNowPlayingInfoPropertyPlaybackRate`
+
+* 同步状态到 CarPlay App 
+
+  * 音频播放状态
+
+    ```objectivec
+    #import <MediaPlayer/MediaPlayer>
+    // 更新 CarPlay App 上的音频播放状态
+    if (@available(iOS 13.0, *)) {
+        MPNowPlayingInfoCenter.defaultCenter.playbackState = MPNowPlayingPlaybackStatePaused;
+        // MPNowPlayingPlaybackStatePaused、MPNowPlayingPlaybackStateStopped
+    }
+    ```
+
+  * 播放模式状态：顺序循环/单曲循环
+
+    ```objectivec
+    MPRemoteCommandCenter.sharedCommandCenter.changeRepeatModeCommand.currentRepeatType = repeatType;
+    ```
+
+* 同步状态到 iPhone App
+
+  * 通过监听 MPRemoteCommandCenter 事件
+
+    * playCommand
+    * pauseCommand
+    * previousTrackCommand
+    * nextTrackCommand
+    * togglePlayPauseCommand
+    * changeRepeatModeCommand
+    * changePlaybackRateCommand
+
+  * 使用 CarPlay Framework 时，changeRepeatModeCommand、changePlaybackRateCommand 不再由 MPRemoteCommandCenter 触发，而是通过 CPNowPlayingRepeatButton、CPNowPlayingPlaybackRateButton 的 handle 监听。但 command.enabled 还是要开启。
+
+    ```objectivec
+    // Discussion
+    CPNowPlayingRepeatButton is a concrete subclass of CPNowPlayingButton. Use the button’s handler to invoke your existing functionality for cycling through repeat modes, using the same MPChangeRepeatModeCommand that you provide to MPRemoteCommandCenter.
+    CarPlay uses MPRemoteCommandCenter to observe changes to the repeat mode and updates the button’s appearance accordingly.
+    
+    CPNowPlayingRepeatButton 是 CPNowPlayingButton 的一个具体子类。使用 the button’s handler 监听远程 repeatButton 被触发，然后调整 iPhone App 中的 repeatMode 并通过 RemoteCommandCenter.sharedCommandCenter.changeRepeatModeCommand.currentRepeatType 同步到 CarPlay App 中
+    ```
+
+* 进度误差问题 
+
+  
+  
+* CarPlay Framework 需要设置为弱引用 optional，否则在 iOS 15 以下打开的话 App 会 Crash
+
+* 首次启动隐私协议 window 弹不出来的问题。使用 UIScene 的话，window 要赋值 windowScene 属性，这样才会与之绑定。iPhone App 就是一个 UIWindowScene，且仅有一个。
+
+```objectivec
++ (void)load {
+
+    if (@available(iOS 13.0, *)) {
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            [NSObject bbp_swizzleInstanceMethod:self
+                                    originalSel:@selector(initWithFrame:)
+                                    targetClass:self
+                                      targetSel:@selector(brScene_initWithFrame:)];
+        });
+    }
+}
+
+- (instancetype)brScene_initWithFrame:(CGRect)frame API_AVAILABLE(ios(13)) {
+    
+    [self brScene_initWithFrame:frame];
+
+    if ([self isKindOfClass:UIWindow.class]) {
+        [(UIWindow *)self setWindowScene:BRScenes.mainScene];
+    }
+    return self;
+}
+
+@end
+```
+
+
 
 ## API
 
