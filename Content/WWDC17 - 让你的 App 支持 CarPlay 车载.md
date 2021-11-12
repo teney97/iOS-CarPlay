@@ -1,4 +1,4 @@
-## WWDC17 - 让您的 App 支持 CarPlay 车载
+## WWDC17 - 让你的 App 支持 CarPlay 车载
 
 **地址**：https://developer.apple.com/wwdc17/719
 
@@ -8,7 +8,7 @@
 
 **总结**：
 
-该 Session 是面向开发者的，简要介绍了 App 在 CarPlay 中是如何运行的、如何将 App 集成到 CarPlay 平台上、开发规范以及避免常见的错误。
+该 Session 是面向开发者的，简要介绍了 App 在 CarPlay 中是如何运行的、如何将 App 集成到 CarPlay 平台上、开发规范以及如何避免常见的错误。
 
 CarPlay 中的所有 App 均可使用的功能：
 
@@ -26,7 +26,7 @@ CarPlay 中的所有 App 均可使用的功能：
   * AVAudioSessionModeSpokenAudio
   * AVAudioSessionModeCategoryOptionInterruptSpokenAudioAndMixWithOthers
 
-对于在 CarPlay 上集成的 App，App icon 将会出现在 CarPlay 主屏幕上，在 CarPlay 中运行的 App 将会在 CarPlay 和 iPhone 屏幕上显示。
+对于在 CarPlay 上集成的 App，App icon 将会出现在 CarPlay 主屏幕上，在 CarPlay 中运行的 App 将会在 CarPlay 和 iPhone 屏幕上显示（iOS 13 及更早版本）。
 
 * 音频 App，可以提供音乐、新闻、播客等内容，采用一致的设计来适合在车中使用
 * 使用 Siri 短信和语音通话 App 可以经过升级以支持 CarPlay
@@ -129,11 +129,11 @@ extension YourAppContentManager : MPPlayableContentDelegate {
 
 **Now Playing Screen**
 
-现在让我们来看一下 CarPlay 中 “正在播放” 的界面。一些控件和元数据与控制中心显示的是一样的。总的来说，你在控制中心所看到的控件和数据也应该出现在 CarPlay “正在播放” 界面上。用户可以通过点击 App 导航界面右上角的 “正在播放” 或通过 CarPlay 主屏幕上的 “正在播放” App 进入 “正在播放” 界面。运行过程中，你的 App 名字会显示在 “正在播放” 界面的右上角。
+现在让我们来看一下 CarPlay 中 “正在播放” 的界面。一些控件和元数据与 iPhone 的控制中心显示的是一样的。总的来说，你在控制中心所看到的控件和数据也应该出现在 CarPlay “正在播放” 界面上。用户可以通过点击 App 导航界面右上角的 “正在播放” 或通过 CarPlay 主屏幕上的 “正在播放” App 进入 “正在播放” 界面。运行过程中，你的 App 名字会显示在 “正在播放” 界面的右上角。
 
 ![](https://cdn.nlark.com/yuque/0/2021/png/12376889/1630309774681-d69089c3-f02a-4904-b467-2e14f61c450c.png?x-oss-process=image%2Fresize%2Cw_750%2Climit_0)
 
-CarPlay “正在播放” 界面的元数据设置与 `Control Center 控制中心` 和其它源相同。设置一个信息字典到 `MPNowPlayingInfoCenter` ，并填写尽可能多的信息。
+CarPlay “正在播放” 界面的元数据设置与 `控制中心` 和其它源相同。设置 `MPNowPlayingInfoCenter` 的 nowPlayingInfo 属性 ，并填写尽可能多的信息。
 
 ```swift
 // Set Metadata to be Displayed in Now Playing Info Center
@@ -199,7 +199,7 @@ changePlaybackRateCommand.supportedPlaybackRates = [0.5, 1.0, 1.5, 2.0]
 
 **Best Practices**
 
-* 在调用 `MPPlayableContentDataSource` 和 `MPPlayableContentDelegate` 中的完成处理程序之前，确保将要播放的内容实际上已经准备好播放或显示。
+* 在调用 `MPPlayableContentDataSource` 和 `MPPlayableContentDelegate` 中的 completion handlers 之前，确保将要播放的内容实际上已经准备好播放或显示，在此期间显示加活动指示器。
 * 对于那些不用 `Tabs` 而只用 `TableView` 的 App，`TableView` 必须返回至少一项内容。
 * CarPlay 会显示一个加载活动指示器，如果 App 在一定时限内没有返回内容就会超时。如果你的 App 需要一些初始的设置，比如登录凭据，在页面的第一行应该提示用户 App 当前的状态，通过填充一个 `MPContentItem`，MPContentItem is neither playable nor a container indicating the state of the app to the user。
 
