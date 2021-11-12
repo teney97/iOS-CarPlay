@@ -4,7 +4,7 @@
 
 CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用（iPad 不支持）。其前身是叫 iOS in the Car，2014 年更名为 CarPlay。
 
-简单地说，如果你的汽车支持 CarPlay，那么当你的汽车（通过数据线、蓝牙、Wi-Fi）连接 iPhone 时，汽车显示屏会自动切换到 CarPlay，iPhone 上所有支持 CarPlay 的 app 会自动显示在 CarPlay 中（你可以在 iPhone 设置（通用 - CarPlay 车载）中屏蔽指定 app）。CarPlay 上的 App 的用户界面是固定的，由 Apple 设计，内容由 app 自己提供。
+简单地说，如果你的汽车支持 CarPlay，那么当你的汽车（通过数据线、蓝牙、Wi-Fi）连接 iPhone 时，汽车显示屏会自动切换到 CarPlay，iPhone 上所有支持 CarPlay 的 app 会自动显示在 CarPlay 中，你可以在 iPhone 设置（通用 - CarPlay 车载）中屏蔽指定 app。Apple 对 CarPlay App 用户界面采用一致的设计，内容由 app 自己提供。
 
 控制 CarPlay 主要有 3 种方式：Siri、触屏显示屏、物理按键。
 
@@ -34,14 +34,16 @@ CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用（iPa
 
    对于 iOS 14 以上来说，它们就是两个 UIScene，因此 CarPlay app 和 iPhone app 可以一个处于后台一个处于前台。而对于 iOS 13 及更低版本的 CarPlay app，它和 iPhone app 只能共处前台或后台。
 
-5. 笔者开发的是音频类 CarPlay app，对其它类型的 app 没做了解，不过大致的开发流程应该差不多。开发一个音频类 CarPlay app 就是从 CPTemplateApplicationSceneDelegate 入口开始来构建 UI，填充数据。CarPlay app 的用户界面相对来说比较固定，但使用 CarPlay Framework，Apple 支持更多可定制化的 UI 了。使用 CarPlay Framework 或者 MediaPlayer Framework 来构建的 CarPlay app，都是通过 MPRemoteCommandCenter 和 MPNowPlayingInfoCenter 来提供播放界面的音频信息以及播放控制。只不过在 CarPlay Framework 中，一些 RemoteCommand 事件通过 Button Handle 来处理了，比如播放模式、播放速率等等。当然如果你的 app 是音频类的话，应该已经支持了这些功能，针对 CarPlay 做下优化或者功能增强就行。
+5. 笔者开发的是音频类 CarPlay app，对其它类型的 app 没做了解，不过大致的开发流程应该差不多。开发一个音频类 CarPlay app 就是从 CPTemplateApplicationSceneDelegate 入口开始来构建 UI，填充数据。CarPlay app 的用户界面相对来说比较固定，但使用 CarPlay Framework，Apple 支持更多可定制化的 UI 了。当车机连接后，音频将通过汽车扬声器播放。使用 CarPlay Framework 或者 MediaPlayer Framework 来构建的 CarPlay app，都是通过 MPNowPlayingInfoCenter 和 MPRemoteCommandCenter 来提供播放界面的音频信息以及播放控制。只不过在 CarPlay Framework 中，一些 RemoteCommand 事件通过 Button Handle 来处理了，比如播放模式、播放速率等等。当然如果你的 app 是音频类的话，应该已经支持了这些功能，针对 CarPlay 做下优化或者功能增强就行。
 
-   * 响应 MPRemoteCommandCenter 事件，让用户对你的内容执行命令，如播放、暂停、切换歌曲等等。
    * 设置和更新 MPNowPlayingInfoCenter 的 nowPlayingInfo，它包含当前播放音频的元数据，如标题、作者、时长等等。
+   * 响应 MPRemoteCommandCenter 事件，让用户对你的内容执行命令，如播放、暂停、切换歌曲等等。
 
 6. 学习 UI 的使用，界面基本就是由 Template 和 Item 组成，常用的有 CPTabBarTemplate、CPListTemplate、CPListItem、CPListImageRowItem 等等。
 
 7. 真实环境（汽车中）测试。
+
+
 
 ## 相关资料
 
@@ -58,7 +60,7 @@ CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用（iPa
 
 * **地址**：https://developer.apple.com/wwdc16/723
 * **时长**：26 分钟
-* **概览**：了解 CarPlay 车载如何与您的车辆信息娱乐系统整合。了解 CarPlay 车载如何与您的车载资源协作，如显示屏、扬声器、麦克风、用户输入、方向盘控制键、仪表盘和传感器等。
+* **概览**：了解 CarPlay 车载如何与你的车辆信息娱乐系统整合。了解 CarPlay 车载如何与你的车载资源协作，如显示屏、扬声器、麦克风、用户输入、方向盘控制键、仪表盘和传感器等。
 * **总结**：[WWDC16 - 723](https://github.com/teney97/iOS-CarPlay/blob/main/Content/WWDC16%20-%20%E5%BC%80%E5%8F%91%20CarPlay%20%E8%BD%A6%E8%BD%BD%E7%B3%BB%E7%BB%9F%20-%20%E7%AC%AC%202%20%E9%83%A8%E5%88%86.md)
 
 #### WWDC17 - 开发无线 CarPlay 车载系统
@@ -104,7 +106,7 @@ CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用（iPa
 * [CarPlay - 设计指南](https://developer.apple.com/design/human-interface-guidelines/carplay/overview/introduction/)
 * [CarPlay - 开发者文档](https://developer.apple.com/documentation/carplay?language=objc)
   * [申请 CarPlay 权限](https://developer.apple.com/documentation/carplay/requesting_the_carplay_entitlements?language=objc)（如果申请了 CarPlay 权限后，启动 CarPlay Simulator 还是没有显示你的 app，看看是不是漏了 “添加权限文件” 步骤还是漏了哪一步）
-  * [使用 CarPlay Simulator 运行和调试 CarPlay App](https://developer.apple.com/documentation/carplay/using_the_carplay_simulator?language=objc) （需要先申请 CarPlay 权限，创建配置文件后才能使用 CarPlay Simulator，而且审核得没那么快。如果你使用 M1 Mac，那可能用不了 CarPlay Simulator）
+  * [使用 CarPlay Simulator 运行和调试 CarPlay App](https://developer.apple.com/documentation/carplay/using_the_carplay_simulator?language=objc) （需要先申请 CarPlay 权限，创建配置文件后才能使用 CarPlay Simulator，而且审核没那么快。如果你使用 M1 Mac，那可能用不了 CarPlay Simulator）
   * [在 CarPlay 中显示内容](https://developer.apple.com/documentation/carplay/displaying_content_in_carplay?language=objc)
   * [兼容 iOS13 及更早 iOS 系统](https://developer.apple.com/documentation/carplay/supporting_previous_versions_of_ios?language=objc)
 * [CarPlay - App 编程指南](https://developer.apple.com/carplay/documentation/CarPlay-App-Programming-Guide.pdf)
