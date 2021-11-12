@@ -40,7 +40,7 @@ iOS13 中，苹果引入了 UIScene 的概念，用于构建多窗口应用。�
 
 * **地址**：https://developer.apple.com/wwdc16/723
 * **时长**：26 分钟
-* **概览**：了解 CarPlay 车载如何与您的车辆信息娱乐系统整合。了解 CarPlay 车载如何与您的车载资源协作，如显示屏、扬声器、麦克风、用户输入、方向盘控制键、仪表盘和传感器等。
+* **概览**：了解 CarPlay 车载如何与你的车辆信息娱乐系统整合。了解 CarPlay 车载如何与你的车载资源协作，如显示屏、扬声器、麦克风、用户输入、方向盘控制键、仪表盘和传感器等。
 * **总结**：[WWDC16 - 723](https://github.com/teney97/iOS-CarPlay/blob/main/Content/WWDC16%20-%20%E5%BC%80%E5%8F%91%20CarPlay%20%E8%BD%A6%E8%BD%BD%E7%B3%BB%E7%BB%9F%20-%20%E7%AC%AC%202%20%E9%83%A8%E5%88%86.md)
 
 
