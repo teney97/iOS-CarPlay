@@ -176,14 +176,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 }
 ```
 
-#### HTScenes 获取场景
+#### TTScenes: 用于获取场景
 
 ```swift
 import UIKit
 import CarPlay
 
 @available(iOS 13.0, *)
-class HTScenes: NSObject {
+class TTScenes: NSObject {
 
     static var connectedScenes: Set<UIScene> {
         UIApplication.shared.connectedScenes
@@ -212,10 +212,10 @@ class HTScenes: NSObject {
     }
 }
 
-- (instancetype)htScene_initWithFrame:(CGRect)frame API_AVAILABLE(ios(13)) {
-    [self htScene_initWithFrame:frame];
+- (instancetype)ttScene_initWithFrame:(CGRect)frame API_AVAILABLE(ios(13)) {
+    [self ttScene_initWithFrame:frame];
     if ([self isKindOfClass:UIWindow.class]) {
-        [(UIWindow *)self setWindowScene:HTScenes.mainScene];
+        [(UIWindow *)self setWindowScene:TTScenes.mainScene];
     }
     return self;
 }
@@ -225,7 +225,7 @@ class HTScenes: NSObject {
 
 #### 首次启动隐私弹窗适配
 
-如果你的首次启动隐私弹窗是通过在 AppDelegate 的 init 方法中 hook `application:didFinishLaunchingWithOptions:` 方法进行拦截的话，可以 hook `scene:willConnectToSession:options:` 并将隐私弹窗弹出的时机放在这里。`scene:willConnectToSession:options:` 调用时机将在 `application:didFinishLaunchingWithOptions:` return 之后。
+如果你的首次启动隐私弹窗是通过在 AppDelegate 的 init 方法中 hook `application:didFinishLaunchingWithOptions:` 方法进行拦截的话，也需要 hook `scene:willConnectToSession:options:`，然后可以将隐私弹窗弹出的时机放在这里。`scene:willConnectToSession:options:` 调用时机将在 `application:didFinishLaunchingWithOptions:` return 之后。
 
 ## 开发 CarPlay 音频 App
 
@@ -292,9 +292,9 @@ CPTemplateApplicationSceneDelegate 协议定义了 CarPlay 在场景连接、断
 
 ### CarPlay Simulator
 
-每个 iPhone Simulator 都附带一个 CarPlay Simulator，在 I/O > External Displays > CarPlay... 打开。
+每个 iPhone Simulator 都附带一个 CarPlay Simulator，在 I/O > External Displays > CarPlay 打开。默认的标准的 CarPlay Simulator 窗口大小和比例为 `800 x 480, @2x`。
 
-如果你想在每次启动 CarPlay Simulator 前都可以设置屏幕尺寸等参数，可以在终端输入以下命令。不过 Width、Height、Scale 我设置后都不尽如人意，不知道是不是我使用方式不对。
+如果是导航类 app，Apple 建议开启 CarPlay Simulator 的附加选项，在终端输入以下命令。这允许你每次启动 CarPlay Simulator 前都可以设置窗口大小和比例，以测试确保你的地图内容适配了所有推荐的配置。也许只支持导航类 app 吧，音频类 app 改变窗口大小后显示效果不尽如人意。
 
 ```
 defaults write com.apple.iphonesimulator CarPlayExtraOptions -bool YES
@@ -449,35 +449,269 @@ enum CPListItemAccessoryType : Int {
 
 使用 CarPlay Framework 或者 MediaPlayer Framework 来构建的 CarPlay app，都是通过 MPRemoteCommandCenter 和 MPNowPlayingInfoCenter 来提供播放界面的音频信息以及播放控制。只不过在 CarPlay Framework 中，一些 RemoteCommand 事件通过 Button Handle 来处理了，比如播放模式、播放速率等等。
 
-* 设置和更新 MPNowPlayingInfoCenter 的 nowPlayingInfo，它包含当前播放音频的元数据，如标题、作者、时长等等。
+* 设置和更新 MPNowPlayingInfoCenter 的 nowPlayingInfo，它包含当前播放音频的元数据，如标题、作者、时长等等。时机：
 
-下图中的音频名称、音频描述、音频时长、当前播放进度、播放模式、播放速率等音频播放信息，都是通过更新 MPNowPlayingInfoCenter 的 nowPlayingInfo 来显示到 CPNowPlayingTemplate 上的。你的音频 app 之前应该已经实现了该功能以将音频播放信息同步到锁屏界面，现在根据你的 CarPlay app 需求补充下音频播放信息到 nowPlayingInfo 就行。
+  * 切换音频（上一首、下一首）
+  * 暂停、恢复播放
+  * 跳过片头
+  * 拖动进度
+  * 更新播放速率，nowPlayingInfo.key : `MPNowPlayingInfoPropertyPlaybackRate`
+  * ...
+
+* 除了 nowPlayingInfo，还有一些状态需要通过其它方式同步到 CarPlay app
+
+  * 音频播放状态
+
+    ```objectivec
+    #import <MediaPlayer/MediaPlayer>
+    // 更新 CarPlay App 上的音频播放状态
+    if (@available(iOS 13.0, *)) {
+        MPNowPlayingInfoCenter.defaultCenter.playbackState = MPNowPlayingPlaybackStatePaused;
+        // MPNowPlayingPlaybackStatePaused、MPNowPlayingPlaybackStateStopped
+    }
+    ```
+
+  * 播放模式状态：顺序循环/单曲循环
+
+    ```objectivec
+    MPRemoteCommandCenter.sharedCommandCenter.changeRepeatModeCommand.currentRepeatType = repeatType;
+    ```
+
+
+下图中的音频名称、音频描述、音频时长、当前播放进度、播放模式、播放速率等音频播放信息，都是通过以上方式同步显示到 CPNowPlayingTemplate 上的。你的音频 app 之前应该已经实现了该功能以将音频播放信息同步到锁屏界面，现在根据你的 CarPlay app 需求补充下音频播放信息到 nowPlayingInfo 就行。
 
 * 响应 MPRemoteCommandCenter 事件，让用户对你的内容执行命令，如播放、暂停、切换歌曲等等。
 
+  * playCommand
+  * pauseCommand
+  * previousTrackCommand
+  * nextTrackCommand
+  * togglePlayPauseCommand
+  * changeRepeatModeCommand
+  * changePlaybackRateCommand
   
+* 使用 CarPlay Framework 时，changeRepeatModeCommand、changePlaybackRateCommand 不再由 MPRemoteCommandCenter 触发，而是通过 CPNowPlayingRepeatButton、CPNowPlayingPlaybackRateButton 的 handle 监听。但 command.enabled 还是要开启。
 
-![image-20211109173720890](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211109173720890.png)
+  ```swift
+  // Discussion
+  CPNowPlayingRepeatButton is a concrete subclass of CPNowPlayingButton. Use the button’s handler to invoke your existing functionality for cycling through repeat modes, using the same MPChangeRepeatModeCommand that you provide to MPRemoteCommandCenter.
+  CarPlay uses MPRemoteCommandCenter to observe changes to the repeat mode and updates the button’s appearance accordingly.
+  ```
 
-### 异步图片
+### 图片
+
+#### 图标和图片
+
+可以看看 [CarPlay - 设计指南](https://developer.apple.com/design/human-interface-guidelines/carplay/overview/introduction/)，并将它发给你的 PM 和 UI。
+
+#### 异步图片
+
+* CarPlay 不支持 gif 图片，配置会导致 crash。
+* asyncImage 也需要适配下 scale，否则会模糊。
+* 可以对 CPListItem 和 CPListImageRowItem 扩展下 asyncImage 的方法，方便使用。
+
+```swift
+@available(iOS 14, *)
+protocol CPAsyncImage {
+    func loadImage(with url: URL?, complete: @escaping (UIImage?) -> (Void))
+    static var placeholderImage: UIImage { get }
+}
+
+@available(iOS 14, *)
+extension CPAsyncImage {
+    
+    func loadImage(with url: URL?, complete: @escaping (UIImage?) -> (Void)) {
+        
+        guard let url = url else {
+            complete(nil)
+            return
+        }
+        
+        // 这儿也可以根据 urlType 做下过滤
+        
+        SDWebImageManager.shared.loadImage(with: url, options: .retryFailed, progress: nil) { image, data, error, type, finished, imageURL in
+            
+            guard var image = image, image.images == nil else {
+                complete(nil)
+                return
+            }
+                   
+            if let cgImage = image.cgImage {
+                let screen = TTScenes.carPlayScene?.value(forKey: "screen") as? UIScreen
+                let scale = screen?.scale ?? 1
+                image = UIImage(cgImage: cgImage, scale: scale, orientation: .up)
+            }
+            complete(image)
+        }
+    }
+    
+    static var placeholderImage: UIImage {
+        UIImage(named: "CP_default") ?? UIImage.tt_image(with: UIColor.clear) // 通过 color 生成一张透明图片
+    }
+}
+
+@available(iOS 14, *)
+extension CPListItem: CPAsyncImage {
+    
+    func asyncImage(with url: URL?, placeholderImage: UIImage? = CPListItem.placeholderImage, complete: ((UIImage?) -> (Void))? = nil) {
+        
+        self.setImage(placeholderImage)
+        loadImage(with: url) { [weak self] image in
+            guard let image = image else { return }
+            self?.setImage(image)
+            complete?(image)
+        }
+    }
+}
+
+@available(iOS 14, *)
+extension CPListImageRowItem: CPAsyncImage {
+    
+    func asyncImage(with urls: [URL?], placeholderImage: UIImage = CPListImageRowItem.placeholderImage, complete: (((index: Int, image: UIImage?)) -> (Void))? = nil) {
+        
+        var images = Array(repeating: placeholderImage, count: urls.count)
+        self.update(images)
+        
+        for (index, url) in urls.enumerated() {
+            loadImage(with: url) { [weak self] image in
+                guard let image = image else { return }
+                images[index] = image
+                self?.update(images)
+                complete?((index, image))
+            }
+        }
+    }
+}
+```
+
+### 通用 Section
+
+开发音频类 CarPlay app，你应该需要以下通用 Section。
+
+```Swift
+@available(iOS 14, *)
+class CPCommonSection: NSObject {
+    
+    enum SectionType {
+        case loading
+        case playAll
+        case nonePlayRecord
+    }
+
+    static func loadingSection() -> CPListSection {
+        let item = CPListItem(text: "正在加载中", detailText: nil)
+        item.userInfo = SectionType.loading
+        let section = CPListSection(items: [item])
+        return section
+    }
+    
+    static func playAllSection(count: Int) -> CPListSection {
+        let item = CPListItem(text: "播放全部", detailText: "\(count)首", image: UIImage(named: "CP_play"))
+        item.userInfo = SectionType.playAll
+        let section = CPListSection(items: [item])
+        return section
+    }
+    
+    static func nonePlayRecordSection() -> CPListSection {
+        let item = CPListItem(text: "还没有播放记录哦", detailText: nil)
+        item.userInfo = SectionType.nonePlayRecord
+        let section = CPListSection(items: [item])
+        return section
+    }
+}
+```
 
 
 
+### 埋点
+
+一些埋点可能需要通过投机取巧的方法，比如在哪个页面触发了返回按钮，可以通过 `templateDidAppear`、`templateWillDisappear` 等方法配合实现。
 
 
 
+## 注意点
+
+* 单例问题。CarPlay 用到了单例类，CarPlay app 关闭，但 iPhone app 没关闭，进程是还在的，单例还未释放，可能会造成一些问题。可以在 `- templateApplicationScene:didConnectInterfaceController:` 中初始化单例，在 `- templateApplicationScene:didDisconnectInterfaceController:` 中释放单例。
+* TabBar，如果 tabImage 为 nil，那么该 tabBarItem 将会使用 UITabBarItem.SystemItem.more。
+* 数据可以存在 CPListItem.userInfo，不需要扩展属性。它是强引用，需要注意循环引用问题。
+* CarPlay Simulator 的语言是跟随 iPhone Simulator 的，真机是否也如此我没有测试过。
+* CarPlay Framework 需要设置为弱引用 optional（Target > Build phases > Link Binary With Libraries），否则在 iOS 14 以下启动 App 会 crash。
 
 
 
+## 常见问题解答
 
+### CarPlay 连接
 
+**1. 为什么车机连接了，CarPlay 车载却没有出来？**
 
+* 汽车不支持 CarPlay；
+* iPhone 没有开启 Siri。在 `设置 > Siri 与搜索` 中开启 `用“嘿 Siri”唤醒`。如果没有开启 Siri 的话，iPhone 的 `设置 > 通用 ` 中也不会显示 `CarPlay 车载` 这一项。
 
+### Simulator
 
+**1. 为什么 Simulator 菜单栏 I/O > External Displays 中没有 CarPlay 选项？**
 
+你可能还未在开发者网站申请 CarPlay 权限并将配置文件导入到工程中。[申请 CarPlay 权限](https://developer.apple.com/documentation/carplay/requesting_the_carplay_entitlements?language=objc)
 
+**2. 为什么打开 CarPlay Simulator 没有显示我的 app？**
 
+你可能是忘了添加权利文件。你需要将 Key `com.apple.developer.carplay-audio` 添加到 Entitlements.plist 中并设置 Value 为 `1`。
 
+```xml
+<key>com.apple.developer.carplay-audio</key>
+<true/>
+```
+
+可以参考 [申请 CarPlay 权限](https://developer.apple.com/documentation/carplay/requesting_the_carplay_entitlements?language=objc)。
+
+**3. 为什么 M1 Mac 打开 CarPlay app 直接崩溃？** 
+
+如果你的 Xcode 以 Rosetta 模式运行，那将无法使用 CarPlay Simulator。将 Simulator 也以 Rosetta 运行，结果无效。这个问题暂时没有解决方案。https://issueexplorer.com/issue/mapbox/mapbox-navigation-ios/3355。
+
+**4. 从 “播放中” app 返回到音频源 app，页面显示异常**
+
+感觉是 Apple 的 bug，模拟器和真机都可能出现。bug 出现的步骤是：
+
+1. 先不要启动你的 CarPlay app
+2. 在你的 iPhone app 中播放音频
+3. 打开 CarPlay 的 “播放中” app
+4. 通过 “播放中” app 返回到你的 CarPlay app
+
+可能会出现的问题：
+
+* tabBarItem 重叠
+* CPListImageRowItem 本应该只显示 4 张图片，却显示了 5 张
+
+切换 template、退后台再进入，页面恢复正常。
+
+### 图片
+
+**1. 为什么 CarPlay 上的图片模糊？**
+
+无论是本地图片还是异步图片都需要适配下 scale。
+
+### 正在播放
+
+**1. rootTemplate 右上角的 “正在播放按钮” 什么时候出现？**
+
+当前 app 正在播放音频时出现，点击它 push 到 CPNowPlayingTemplate。
+
+**2. CarPlay 主界面的 “播放中（Now Playing）” app 是什么？**
+
+* CPNowPlayingTemplate 是个单例类，所有 CarPlay app 的 “正在播放” 界面都是使用这个单例。
+* “播放中” app 将从 nowPlayingCenter 中取数据，也就是说该 app 将显示 iPhone 上正在播放的音频信息，并将音频源 app 的 appName 显示在右上角，即使该音频源 app 不支持 CarPlay。因此，即使你的 app 暂时不支持 CarPlay，你也可以通过适配好 MPNowPlayingInfoCenter 和 MPRemoteCommandCenter 来使你的 app 支持 CarPlay ”播放中“ app。
+
+![](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211115092835324.png)
+
+* 如果 “播放中” app 的音频源 app 支持 CarPlay，那么启动 “播放中” app 就会触发音频源 app 的 CarPlay 场景连接，也就是启动音频源 CarPlay app。这就是为什么 Apple 让我们在 `- templateApplicationScene:didConnectInterfaceController:` 的时机就配置好 CPNowPlayingTemplate 的原因，而不应该在 push 到 CPNowPlayingTemplate 的时候去配置，因为 CPNowPlayingTemplate 并不一定通过主动 push 时触发，可能是通过 “播放中” app 或者 rootTemplate 右上角的 “正在播放按钮”。点击 “播放中” app 左上角的返回按钮，将返回到该音频源的 CarPlay app 的 rootTemplate。
+
+**3. 正在播放页面中音频插图（封面）不显示**
+
+* 如果是显示了占位图，那可能是因为你没将有效图片设置到 nowPlayingInfo 的 MPMediaItemPropertyArtwork key 中。
+* 如果是连占位图都没有：
+  * 如果是真实环境汽车中不显示，需要在 CarPlay 设置中将 `显示专辑插图` 打开。如果设置中没有显示该选项，那可能是当前 iPhone 设置的语言和地区不支持，在 iPhone 的  `设置 > 语言和地区` 中设置。参考帖子 https://tieba.baidu.com/p/6276976841。
+  * 如果是 CarPlay Simulator，那应该没办法显示，即使按照上面的步骤操作了，这点我暂时没有依据。
 
 
 
