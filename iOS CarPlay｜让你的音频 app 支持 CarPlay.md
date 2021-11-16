@@ -207,17 +207,26 @@ class TTScenes: NSObject {
 @implementation UIView (SceneHook)
 
 + (void)load {
-    if (@available(iOS 13.0, *)) {
-        // hook initWithFrame
-    }
-}
 
-- (instancetype)ttScene_initWithFrame:(CGRect)frame API_AVAILABLE(ios(13)) {
-    [self ttScene_initWithFrame:frame];
-    if ([self isKindOfClass:UIWindow.class]) {
-        [(UIWindow *)self setWindowScene:TTScenes.mainScene];
+    if (@available(iOS 13.0, *)) {
+        
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            SEL selector = @selector(initWithFrame:);
+            Method method = class_getInstanceMethod(self, selector);
+            if (!method) {
+                NSAssert(NO, @"Method not found for [UIView initWithFrame:]");
+            }
+            IMP imp = method_getImplementation(method);
+            class_replaceMethod(self, selector, imp_implementationWithBlock(^(UIView *self, CGRect frame) {
+                ((UIView * (*)(UIView *, SEL, CGRect))imp)(self, selector, frame);
+                if ([self isKindOfClass:UIWindow.class]) {
+                    [(UIWindow *)self setWindowScene:TTScenes.mainScene];
+                }
+                return self;
+            }), method_getTypeEncoding(method));
+        });
     }
-    return self;
 }
 
 @end
@@ -447,6 +456,15 @@ enum CPListItemAccessoryType : Int {
 
 这是音频类 CarPlay app 最重要的页面了，使用 CPNowPlayingTemplate，它是一个单例。
 
+你可以根据自己的需求配置 CPNowPlayingTemplate，比如添加控制按钮。你可以使用 CarPlay Framework 提供的一些系统按钮，也可以自定义按钮。需要注意的是，你要在 `- templateApplicationScene:didConnectInterfaceController:` 的时机就配置好 CPNowPlayingTemplate，而不应该在 push 到 CPNowPlayingTemplate 的时候才去配置，因为 CPNowPlayingTemplate 并不一定是通过主动 push 时触发，还可能是通过 “播放中” app 或者 rootTemplate 右上角的 “正在播放按钮”。
+
+```swift
+let nowPlayingTemplate = CPNowPlayingTemplate.shared
+let repeatButton = CPNowPlayingRepeatButton() { ... }
+let playbackRateButton = CPNowPlayingPlaybackRateButton() { ... }
+nowPlayingTemplate.updateNowPlayingButtons([repeatButton, playbackRateButton])
+```
+
 使用 CarPlay Framework 或者 MediaPlayer Framework 来构建的 CarPlay app，都是通过 MPRemoteCommandCenter 和 MPNowPlayingInfoCenter 来提供播放界面的音频信息以及播放控制。只不过在 CarPlay Framework 中，一些 RemoteCommand 事件通过 Button Handle 来处理了，比如播放模式、播放速率等等。
 
 * 设置和更新 MPNowPlayingInfoCenter 的 nowPlayingInfo，它包含当前播放音频的元数据，如标题、作者、时长等等。时机：
@@ -546,7 +564,7 @@ extension CPAsyncImage {
     }
     
     static var placeholderImage: UIImage {
-        UIImage(named: "CP_default") ?? UIImage.tt_image(with: UIColor.clear) // 通过 color 生成一张透明图片
+        UIImage(named: "CP_default") ?? UIImage()
     }
 }
 
@@ -636,6 +654,7 @@ class CPCommonSection: NSObject {
 * 数据可以存在 CPListItem.userInfo，不需要扩展属性。它是强引用，需要注意循环引用问题。
 * CarPlay Simulator 的语言是跟随 iPhone Simulator 的，真机是否也如此我没有测试过。
 * CarPlay Framework 需要设置为弱引用 optional（Target > Build phases > Link Binary With Libraries），否则在 iOS 14 以下启动 App 会 crash。
+* CarPlay 断开连接，建议暂停音乐
 
 
 
