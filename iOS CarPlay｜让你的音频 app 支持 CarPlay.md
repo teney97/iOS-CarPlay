@@ -79,9 +79,12 @@ Targets > General > Deployment Info > Supports multiple windows 取消勾选。�
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     ...
     if (@available(iOS 13.0, *)) {} else {
-        // createWindow
+        // create window
+        // do something after window created
+        // 需要注意原先在 window created 之后才执行的代码，也要兼容 iOS 13
     }
     ...
+    return YES;
 }
 
 @end
@@ -130,11 +133,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene), session.configuration.name == configurationName else { return }
-        // createWindow
+        // create window
         let window = UIWindow(windowScene: windowScene)
         // ...
         self.window = window
         window.makeKeyAndVisible()
+        // do something after window created
     }
   
     func sceneDidDisconnect(_ scene: UIScene) {
