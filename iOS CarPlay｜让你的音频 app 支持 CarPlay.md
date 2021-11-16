@@ -452,7 +452,7 @@ enum CPListItemAccessoryType : Int {
 
 ![image-20211109172500877](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211109172500877.png)
 
-#### 正在播放页面
+#### CPNowPlayingTemplate: 正在播放页面
 
 这是音频类 CarPlay app 最重要的页面了，使用 CPNowPlayingTemplate，它是一个单例。
 
@@ -469,34 +469,34 @@ nowPlayingTemplate.updateNowPlayingButtons([repeatButton, playbackRateButton])
 
 * 设置和更新 MPNowPlayingInfoCenter 的 nowPlayingInfo，它包含当前播放音频的元数据，如标题、作者、时长等等。时机：
 
-  * 切换音频（上一首、下一首）
-  * 暂停、恢复播放
-  * 跳过片头
-  * 拖动进度
-  * 更新播放速率，nowPlayingInfo.key : `MPNowPlayingInfoPropertyPlaybackRate`
+  * 切换音频（上一首、下一首等等）
+  * 暂停、恢复、停止播放
+  * seek（跳过片头、拖动进度等等）
+  * 更新播放速率，nowPlayingInfo.key : `MPNowPlayingInfoPropertyPlaybackRate`（CPNowPlayingTemplate 中播放速率按钮的显示状态）
   * ...
-
+  
 * 除了 nowPlayingInfo，还有一些状态需要通过其它方式同步到 CarPlay app
 
-  * 音频播放状态
+  * 音频播放状态（CPNowPlayingTemplate 中播放按钮的显示状态）
 
     ```objectivec
     #import <MediaPlayer/MediaPlayer>
     // 更新 CarPlay App 上的音频播放状态
     if (@available(iOS 13.0, *)) {
-        MPNowPlayingInfoCenter.defaultCenter.playbackState = MPNowPlayingPlaybackStatePaused;
+        MPNowPlayingInfoCenter.defaultCenter.playbackState = MPNowPlayingPlaybackStatePlaying;
         // MPNowPlayingPlaybackStatePaused、MPNowPlayingPlaybackStateStopped
     }
     ```
 
-  * 播放模式状态：顺序循环/单曲循环
+  * 播放模式状态：顺序循环/单曲循环（CPNowPlayingTemplate 中播放模式按钮的显示状态）
 
     ```objectivec
     MPRemoteCommandCenter.sharedCommandCenter.changeRepeatModeCommand.currentRepeatType = repeatType;
     ```
 
-
 下图中的音频名称、音频描述、音频时长、当前播放进度、播放模式、播放速率等音频播放信息，都是通过以上方式同步显示到 CPNowPlayingTemplate 上的。你的音频 app 之前应该已经实现了该功能以将音频播放信息同步到锁屏界面，现在根据你的 CarPlay app 需求补充下音频播放信息到 nowPlayingInfo 就行。
+
+![image-20211116113630475](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211116113630475.png)
 
 * 响应 MPRemoteCommandCenter 事件，让用户对你的内容执行命令，如播放、暂停、切换歌曲等等。
 
