@@ -1,5 +1,7 @@
 ## 开发 CarPlay 音频 App
 
+从 iOS 14 开始，你可以使用 CarPlay framework 来开发音频 CarPlay app（如果是导航类 app，在 iOS 12 就可以使用 CarPlay Framework），它提供了一些 UI 模版来支持开发者自定义界面；如果你要兼容 iOS 13 及更早版本的话需要使用 MediaPlayer framework 开发，它向前兼容。如果你的 app 需要在 iOS 14 及更高版本上使用 CarPlay framework，并且兼容 iOS 13 级更早版本的话，就要维护两套代码，开发工作量可能接近 double。笔者仅支持了 iOS 14 及更高版本，因此在下篇文章中会详细讲解开发细节。如果你想支持低版本的话也可以看看笔者对「WWDC17 - 让您的 App 支持 CarPlay 车载」和「WWDC18 - CarPlay 车载音频和导航 App」做的笔记。
+
 ### 声明一个 CarPlay scene
 
 在 Info.plist 中声明一个 scene。
