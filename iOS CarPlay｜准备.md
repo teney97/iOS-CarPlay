@@ -24,9 +24,9 @@ CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用（iPa
 
 1. 首先需要确定你的 app 是否适用于 CarPlay，然后去开发者网站申请对应 app 类型的 CarPlay 权限，并对工程进行配置。只有这样你的工程才能使用 CarPlay Simulator。因此如果你计划要开发 CarPlay app 的话，最好提前去申请权限，因为 Apple 审核还要时间。在此期间可以看看相关开发文档，等权限申请下来就可以使用 CarPlay Simulator 调试开发啦。参考文档：[申请 CarPlay 权限](https://developer.apple.com/documentation/carplay/requesting_the_carplay_entitlements?language=objc)。
 
-2. 从 iOS 14 开始，你要使用 CarPlay Framework 来开发 CarPlay app（如果是导航类 app，在 iOS 13 就可以使用 CarPlay Framework）；而 iOS 13 及更早版本使用的是 MediaPlayer Framework，它没有向前兼容。因此，如果你的 app 需要在 iOS 14 及更高版本以及 iOS 13 级更早版本中都支持 CarPlay 的话，就要维护两套代码，开发工作量可能接近 double。笔者仅支持了 iOS 14 及更高版本，因此在下篇文章中会详细讲解开发细节。如果你想支持低版本的话也可以看看笔者对「WWDC17 - 让您的 App 支持 CarPlay 车载」和「WWDC18 - CarPlay 车载音频和导航 App」做的笔记。
+2. 从 iOS 14 开始，你可以使用 CarPlay framework 来开发音频 CarPlay app（如果是导航类 app，在 iOS 12 就可以使用 CarPlay Framework），它提供了一些 UI 模版来支持开发者自定义界面；如果你要兼容 iOS 13 及更早版本的话需要使用 MediaPlayer framework 开发，它向前兼容。如果你的 app 需要在 iOS 14 及更高版本上使用 CarPlay framework，并且兼容 iOS 13 级更早版本的话，就要维护两套代码，开发工作量可能接近 double。笔者仅支持了 iOS 14 及更高版本，因此在下篇文章中会详细讲解开发细节。如果你想支持低版本的话也可以看看笔者对「WWDC17 - 让您的 App 支持 CarPlay 车载」和「WWDC18 - CarPlay 车载音频和导航 App」做的笔记。
 
-3. 在 iOS 14 及更高版本中使用 CarPlay Framework 来开发 CarPlay app 必须使用 UIScene（UIScene 是 Apple 于 iOS 13 引入的，用于构建多窗口应用），因此你的工程必须从传统的 UIWindow 和 UIApplicationDelegate API 向 UIScene 过渡。如果你的工程已经兼容了 UIScene，那么就可以省去这步骤的工作；如果还未兼容的话，也可以看看我在下篇文章中讲到的一些注意点。
+3. 在 iOS 14 及更高版本中使用 CarPlay framework 来开发 CarPlay app 必须使用 UIScene（UIScene 是 Apple 于 iOS 13 引入的，用于构建多窗口应用），因此你的工程必须从传统的 UIWindow 和 UIApplicationDelegate API 向 UIScene 过渡。如果你的工程已经兼容了 UIScene，那么就可以省去这步骤的工作；如果还未兼容的话，也可以看看我在下篇文章中讲到的一些注意点。
 
 4. CarPlay app 是附属于 iPhone app 的，它们是同一进程。
 
