@@ -76,10 +76,13 @@ CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用（iPa
   * 搜狗机翻版：https://github.com/teney97/iOS-CarPlay/tree/main/Content
 * [CarPlay - 适用车型](https://www.apple.com.cn/ios/carplay/available-models/)
 * [CarPlay - Apple 的 CarPlay Music App 示例](https://developer.apple.com/documentation/carplay/integrating_carplay_with_your_music_app?language=objc)
+  * CarPlay Music 是 Apple 提供的一个示例音乐 app，它演示了如何在 CarPlay 中显示自定义 UI。CarPlay Music 使用 CarPlay framework 并通过实现 CPNowPlayingTemplate 和 CPListTemplate 来集成。这个示例 app 提供了一个日志界面，可以帮助你了解 CarPlay app 的生命周期和音乐控制器。
+
 
 ### 其它
 
-* [搜狐｜苹果 iOS 13 CarPlay 详解：全新 UI 设计 + 独立 App 视图 ](https://www.sohu.com/a/336034138_120178230)
+* [苹果 iOS 13 CarPlay 详解：全新 UI 设计 + 独立 App 视图 ](https://www.sohu.com/a/336034138_120178230)
+* [高德地图 CarPlay 适配指南](https://lbs.amap.com/api/ios-navi-sdk/guide/tools/carplay_navi)
 
 ## 系列文章
 
