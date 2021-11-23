@@ -156,7 +156,10 @@ public protocol CPTabBarTemplateDelegate : NSObjectProtocol {
 }
 ```
 
-需要注意一点，与 UITabBarController 的 `- tabBarController:didSelectViewController:` 不同的是，该代理方法在启动 CarPlay app 默认选中第一个 tab 时。就会调用该代理方法一次，因此你需要注意在该代理方法实现中是否需要过滤掉启动的第一次调用。
+需要注意一点，与 UITabBarController 的 `- tabBarController:didSelectViewController:` 不同的是：
+
+* 该代理方法在启动 CarPlay app 默认选中第一个 tab 时。就会调用该代理方法一次，因此你需要注意在该代理方法实现中是否需要过滤掉启动的第一次调用
+* 点击当前选中的 tab 也会调用代理方法，因此你也需要注意下在该代理方法实现中是否过滤这一情况
 
 #### CPListTemplate
 
