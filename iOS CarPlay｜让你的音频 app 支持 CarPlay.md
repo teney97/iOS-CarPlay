@@ -24,7 +24,7 @@ defaults write com.apple.iphonesimulator CarPlayExtraOptions -bool YES
 
 ![image-20211109154924029](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211109154924029.png)
 
-如果你打开了 CarPlay Simulator 却没有在主屏幕上看到你的 app，那么你可能是忘了添加权利文件。你需要将 Key `com.apple.developer.carplay-audio` 添加到 Entitlements.plist 中并设置 Value 为 `1`。
+如果你打开了 CarPlay Simulator 却没有在主屏幕上看到你的 app，那么你可能是忘了添加对应的权利。你需要将 Key `com.apple.developer.carplay-audio` 添加到 Entitlements.plist 中并设置 Value 为 `1`。
 
 ```xml
 <key>com.apple.developer.carplay-audio</key>
@@ -102,15 +102,15 @@ CarPlay app 界面基本就是由 Template 和 Item 组成，而音频类的 Car
 
 | Templates                                                    | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| [`CPListTemplate`](https://developer.apple.com/documentation/carplay/cplisttemplate?language=objc)<br />- [`CPListItem`](https://developer.apple.com/documentation/carplay/cplistitem?language=objc)<br />- [`CPListImageRowItem`](https://developer.apple.com/documentation/carplay/cplistimagerowitem?language=objc)<br />- [`CPMessageListItem`](https://developer.apple.com/documentation/carplay/cpmessagelistitem?language=objc) | 列表模版（类似 UITableView）<br />- 一个通用的、可选择的列表项（对应下图第 2 个）<br />- 显示一系列图像的列表项（对应下图第 3 个）<br />- 表示对话或联系人的列表项（用于信息类 App）（对应下图第 1 个） |
-| [`CPGridTemplate`](https://developer.apple.com/documentation/carplay/cpgridtemplate?language=objc) | 显示和管理 items 网格的模版                                  |
-| [`CPTabBarTemplate`](https://developer.apple.com/documentation/carplay/cptabbartemplate?language=objc) | TabBar 模版（类似 UITabBar）                                 |
+| [CPListTemplate](https://developer.apple.com/documentation/carplay/cplisttemplate?language=objc)<br />- [CPListItem](https://developer.apple.com/documentation/carplay/cplistitem?language=objc)<br />- [CPListImageRowItem](https://developer.apple.com/documentation/carplay/cplistimagerowitem?language=objc)<br />- [CPMessageListItem](https://developer.apple.com/documentation/carplay/cpmessagelistitem?language=objc) | 列表模版（类似 UITableView）<br />- 一个通用的、可选择的列表项（对应下图第 2 个）<br />- 显示一系列图像的列表项（对应下图第 3 个）<br />- 表示对话或联系人的列表项（用于信息类 App）（对应下图第 1 个） |
+| [CPGridTemplate](https://developer.apple.com/documentation/carplay/cpgridtemplate?language=objc) | 显示和管理 items 网格的模版                                  |
+| [CPTabBarTemplate](https://developer.apple.com/documentation/carplay/cptabbartemplate?language=objc) | TabBar 模版（类似 UITabBarController）                       |
 
 ![](https://docs-assets.developer.apple.com/published/49959584ba/rendered2x-1619630673.png)
 
 #### CPTabBarTemplate
 
-TabBar 模版，类似 UIKit 中的 UITabBar。使用一组 CPTemplate 进行初始化，可以将其作为 interfaceController 的 rootTemplate。
+TabBar 模版，类似 UIKit 中的 UITabBarController。使用一组 CPTemplate 进行初始化，可以将其作为 interfaceController 的 rootTemplate。
 
 ```swift
 let tabBarTemplate = CPTabBarTemplate(templates: templates)
@@ -119,9 +119,9 @@ interfaceController.setRootTemplate(tabBarTemplate, animated: true)
 
 ![image-20211123143752733](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211123143752733.png)
 
-需要注意一下，CPTabBarTemplate 的 templates 是有个数限制的，它受汽车显示屏尺寸的应用。可以显示多少个 tabs 取决于 maximumTabCount 属性，取决于 app 种类，音频 app 貌似最多显示 4 个，超过数量会 crash。
+需要注意一下，CPTabBarTemplate 的 templates 是有个数限制的，最大数量通过 maximumTabCount 类属性获取，它的值取决于在 Entitlements.plist 中添加的权利，音频 app 最多添加 4 个，超过数量会 crash。
 
-> 在 [WWDC17 - 让你的 App 支持 CarPlay 车载](https://github.com/teney97/iOS-CarPlay/blob/main/Content/WWDC17%20-%20%E8%AE%A9%E6%82%A8%E7%9A%84%20App%20%E6%94%AF%E6%8C%81%20CarPlay%20%E8%BD%A6%E8%BD%BD.md) 中 Apple 提到过使用 MediaPlayer framework 来构建的 CarPlay app 时，推荐使用最多 4 个 tabs 并且使用较短的标题，因为空间有限并且有些汽车的屏幕比较窄，而且有正在播放的内容的时候还需显示 “正在播放” 按钮。
+> 在 [WWDC17 - 让你的 App 支持 CarPlay 车载](https://github.com/teney97/iOS-CarPlay/blob/main/Content/WWDC17%20-%20%E8%AE%A9%E6%82%A8%E7%9A%84%20App%20%E6%94%AF%E6%8C%81%20CarPlay%20%E8%BD%A6%E8%BD%BD.md) 中 Apple 提到过使用 MediaPlayer framework 来构建的 CarPlay app 时，推荐使用最多 4 个 tabs 并且使用较短的标题，因为空间有限并且有些汽车的屏幕比较窄，而且有音频正在播放的时候还需在 rootTemplate 右上角显示 “正在播放” 按钮。
 
 ```swift
 /**
@@ -134,13 +134,13 @@ interfaceController.setRootTemplate(tabBarTemplate, animated: true)
 open class var maximumTabCount: Int { get }
 ```
 
-可以设置每个 template 标签的 tabTitle 和 tabImage，也可以设置 tabSystemItem 用系统样式（可用样式较少，且没办法自定义文案了）。
+可以设置每个 template 的 tab 的 tabTitle 和 tabImage，也可以设置 tabSystemItem 用系统样式（可用样式较少，且没办法自定义文案了）。
 
 ```swift
 // 自定义 tab 样式
 listTemplate.tabTitle = "推荐"
 listTemplate.tabImage = UIImage(named: "tabbar_recommend")
-// 使用系统 tab 样式，如果同时设置了 tabTitle 和 tabImage， tabSystemItem 不生效
+// 使用系统 tab 样式，如果同时设置了 tabTitle 和 tabImage，那么 tabSystemItem 将不生效
 listTemplate.tabSystemItem = .favorites
 // 显示红点
 listTemplate.showsTabBadge = true
@@ -158,12 +158,12 @@ public protocol CPTabBarTemplateDelegate : NSObjectProtocol {
 
 需要注意一点，与 UITabBarController 的 `- tabBarController:didSelectViewController:` 不同的是：
 
-* 该代理方法在启动 CarPlay app 默认选中第一个 tab 时。就会调用该代理方法一次，因此你需要注意在该代理方法实现中是否需要过滤掉启动的第一次调用
-* 点击当前选中的 tab 也会调用代理方法，因此你也需要注意下在该代理方法实现中是否过滤这一情况
+* 在 CPTabBarTemplate 呈现并默认选中第一个 tab 时，就会调用该代理方法一次，因此你需要注意在该代理方法实现中是否需要过滤掉第一次调用
+* 点击当前选中的 tab 也会调用代理方法，因此你也需要注意下是否过滤这一情况
 
 #### CPListTemplate
 
-列表模版，有点类似 UITableview。可以使用一组 CPListTemplate 来初始化 CPTabBarTemplate。CPListTemplate 由遵循 CPListTemplateItem 协议的 item 组成，有点类似 UITableviewCell。一般音频 App 就使用 CPListItem 和 CPListImageRowItem。
+列表模版，有点类似 UITableview。可以使用一组 CPListTemplate 来初始化 CPTabBarTemplate。CPListTemplate 由遵循 CPListTemplateItem 协议的 item 组成，item 有点类似 UITableviewCell。一般音频 App 就使用 CPListItem 和 CPListImageRowItem。
 
 ![image-20211123153134163](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211123153134163.png)
 
@@ -173,7 +173,7 @@ public protocol CPTabBarTemplateDelegate : NSObjectProtocol {
 
 ```swift
 // 继承链 CPListImageRowItem: CPSelectableListItem: CPListTemplateItem
-let imagesCount = CPMaximumNumberOfGridImages
+let imagesCount = CPMaximumNumberOfGridImages // 取决于汽车显示屏的可用宽度
 let images = Array(repeating: image, count: imagesCount)
 let listImageRowItem = CPListImageRowItem(text: text, images: images)
 ```
@@ -203,7 +203,9 @@ protocol CPListTemplateDelegate : NSObjectProtocol {
 对于音频 item，一般由音频封面、音频名称、音频描述组成，可以使用以下构造器初始化 CPListItem。
 
 ```swift
-let listItem = CPListItem(text: audioName, detailText: audioDesc, image: audioCover)
+let listItem = CPListItem(text: audioName, 
+                          detailText: audioDesc, 
+                          image: audioCover)
 ```
 
 ![image-20211123143752733](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211123143752733.png)
@@ -211,7 +213,11 @@ let listItem = CPListItem(text: audioName, detailText: audioDesc, image: audioCo
 对于专辑 item，还需要右边的导航箭头来和音频 item 做区分，指示用户点击可以打开音频列表页面，可以使用以下构造器初始化 CPListItem。
 
 ```swift
-let listItem = CPListItem(text: albumName, detailText: albumDesc, image: albumCover, accessoryImage: nil, accessoryType: .disclosureIndicator)
+let listItem = CPListItem(text: albumName, 
+                          detailText: albumDesc, 
+                          image: albumCover, 
+                          accessoryImage: nil, 
+                          accessoryType: .disclosureIndicator)
 ```
 
 右边的图标有两个系统样式（箭头、云朵），同时也支持自定义。
@@ -226,7 +232,7 @@ enum CPListItemAccessoryType : Int {
 
 ![image-20211123154215694](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211123154215694.png)
 
-#### CPNowPlayingTemplate: 正在播放页面（Use MPNowPlayingInfoCenter and MPRemoteCommandCenter API）
+#### CPNowPlayingTemplate
 
 这是音频类 CarPlay app 最重要的页面了，使用 CPNowPlayingTemplate，它是一个单例。
 
@@ -239,35 +245,55 @@ let playbackRateButton = CPNowPlayingPlaybackRateButton() { ... }
 nowPlayingTemplate.updateNowPlayingButtons([repeatButton, playbackRateButton])
 ```
 
-无论你使用 CarPlay framework 还是 MediaPlayer framework 来构建的 CarPlay app，都是通过 MPNowPlayingInfoCenter 和 MPRemoteCommandCenter 来提供播放界面的音频信息以及播放控制。只不过在 CarPlay framework 中，一些 remote command 事件通过 button handle 来处理了，比如播放模式、播放速率等等。当然如果你的 app 是音频类的话，应该已经支持了这些功能，因为 iPhone 锁屏界面以及控制中心的音频播放信息和播放控制也是通过它们提供。因此，我们只需要针对 CarPlay 做下优化或者功能增强就行。
+无论你使用 CarPlay framework 还是 MediaPlayer framework 来构建的 CarPlay app，都是通过 MPNowPlayingInfoCenter 和 MPRemoteCommandCenter 来提供播放界面的音频信息以及响应播放控制事件。只不过在 CarPlay framework 中，一些 remote command 事件通过 button handle 来处理了，比如播放模式、播放速率等等。当然如果你的 app 是音频类的话，应该已经支持了这些功能，因为 iPhone 锁屏界面以及控制中心的音频播放信息和播放控制也是通过它们提供。因此，我们只需要针对 CarPlay 做下优化或者功能增强就行。我们具体要做的是：
 
 * 设置和更新 MPNowPlayingInfoCenter 的 nowPlayingInfo，它包含当前播放音频的元数据，如标题、作者、时长等等。时机：
 
   * 切换音频（上一首、下一首等等）
   * 暂停、恢复、停止播放
   * seek（跳过片头、拖动进度等等）
-  * 更新播放速率，nowPlayingInfo 的 key : `MPNowPlayingInfoPropertyPlaybackRate`（CPNowPlayingTemplate 中播放速率按钮的显示状态）
+  * 更新播放速率（CPNowPlayingTemplate 中播放速率按钮的显示状态）
   * ...
-  
+
+```swift
+import MediaPlayer
+// Set Metadata to be Displayed in Now Playing Info Center
+let infoCenter = MPNowPlayingInfoCenter.default()
+infoCenter.nowPlayingInfo = [MPMediaItemPropertyTitle: "Style",
+                             MPMediaItemPropertyArtist: "Taylor Swift",
+                             MPMediaItemPropertyAlbumTitle: "1989",
+                             MPMediaItemPropertyGenre: "Pop",
+                             MPMediaItemPropertyReleaseDate: "2014",
+                             MPMediaItemPropertyPlaybackDuration: 231,
+                             MPMediaItemPropertyArtwork: mediaItemArtwork,
+                             MPNowPlayingInfoPropertyElapsedPlayback: 53,
+                             MPNowPlayingInfoPropertyDefaultPlaybackRate: 1,
+                             MPNowPlayingInfoPropertyPlaybackRate: 1,
+                             MPNowPlayingInfoPropertyPlaybackQueueCount: 13,
+                             MPNowPlayingInfoPropertyPlaybackQueueIndex: 3,
+                            … ]
+```
+
+需要注意一点，对于播放进度也就是当前音频已经播放的时长的更新，系统会根据先前提供的已播放时长和播放速率自动推断出来。因此不需要也不推荐频繁更新 nowPlayingInfo，这代价很大。
+
 * 除了 nowPlayingInfo，还有一些状态需要通过其它方式同步到 CarPlay app，比如：
 
-  * 音频播放状态（CPNowPlayingTemplate 中播放按钮的显示状态）
+  * 音频播放状态：暂停/播放（CPNowPlayingTemplate 中播放按钮的显示状态）
 
-    ```objectivec
-    #import <MediaPlayer/MediaPlayer>
-    if (@available(iOS 13.0, *)) {
-        MPNowPlayingInfoCenter.defaultCenter.playbackState = MPNowPlayingPlaybackStatePlaying; 
-        // MPNowPlayingPlaybackStatePaused、MPNowPlayingPlaybackStateStopped
-    }
-    ```
-    
+  ```objectivec
+  if (@available(iOS 13.0, *)) {
+      MPNowPlayingInfoCenter.defaultCenter.playbackState = MPNowPlayingPlaybackStatePlaying; 
+      // MPNowPlayingPlaybackStatePaused、MPNowPlayingPlaybackStateStopped
+  }
+  ```
+  
   * 播放模式状态：顺序循环/单曲循环（CPNowPlayingTemplate 中播放模式按钮的显示状态）
   
-    ```objectivec
-    MPRemoteCommandCenter.sharedCommandCenter.changeRepeatModeCommand.currentRepeatType = repeatType;
-    ```
+  ```objectivec
+  MPRemoteCommandCenter.sharedCommandCenter.changeRepeatModeCommand.currentRepeatType = repeatType;
+  ```
 
-下图中的音频名称、音频描述、音频时长、当前播放进度、播放模式、播放速率等音频播放信息，都是通过以上方式同步显示到 CPNowPlayingTemplate 上的。你的音频 app 之前应该已经实现了该功能以将音频播放信息同步到 iPhone 锁屏界面以及控制中心，现在根据你的 CarPlay app 需求补充下音频播放信息到 nowPlayingInfo 就行。
+下图中的音频名称、音频描述、音频时长、当前播放进度、播放模式、播放速率等音频播放信息，都是通过以上方式同步显示到 CPNowPlayingTemplate 上的。你的音频 app 之前应该已经实现了该功能以将音频播放信息同步到 iPhone 锁屏界面以及控制中心，现在只需要检查下 CarPlay app 的 CPNowPlayingTemplate 中的音频播放信息是否准确即可。
 
 ![image-20211116113630475](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211116113630475.png)
 
@@ -280,22 +306,20 @@ nowPlayingTemplate.updateNowPlayingButtons([repeatButton, playbackRateButton])
   * togglePlayPauseCommand
   * changeRepeatModeCommand
   * changePlaybackRateCommand
-  
+  * ...
 * 使用 CarPlay framework 时，changeRepeatModeCommand、changePlaybackRateCommand 不再由 MPRemoteCommandCenter 触发，而是通过 CPNowPlayingRepeatButton、CPNowPlayingPlaybackRateButton 的 handle 监听。但 command.enabled 还是要开启。
 
-  ```swift
-  // Discussion
-  CPNowPlayingRepeatButton is a concrete subclass of CPNowPlayingButton. Use the button’s handler to invoke your existing functionality for cycling through repeat modes, using the same MPChangeRepeatModeCommand that you provide to MPRemoteCommandCenter.
-  CarPlay uses MPRemoteCommandCenter to observe changes to the repeat mode and updates the button’s appearance accordingly.
-  ```
+```
+// Discussion
+CPNowPlayingRepeatButton is a concrete subclass of CPNowPlayingButton. Use the button’s handler to invoke your existing functionality for cycling through repeat modes, using the same MPChangeRepeatModeCommand that you provide to MPRemoteCommandCenter.
+CarPlay uses MPRemoteCommandCenter to observe changes to the repeat mode and updates the button’s appearance accordingly.
+```
 
 ### 页面跳转
 
 还记得在 CarPlay app 入口 [- templateApplicationScene:didConnectInterfaceController:](https://developer.apple.com/documentation/carplay/cptemplateapplicationscenedelegate/3578119-templateapplicationscene?language=objc) 中的 CPInterfaceController 吗，它作为我们 CarPlay app 的入口 controller，我们将一个 template 作为 rootTemplate 赋值给它。当我们要 push 一个 template 时也是靠它，它就类似于 UINavigationController。
 
  
-
-
 
 在调用 `MPPlayableContentDataSource` 和 `MPPlayableContentDelegate` 中的 completion handlers 之前，确保将要播放的内容实际上已经准备好播放或显示，在此期间显示加活动指示器。
 
@@ -392,6 +416,10 @@ extension CPListImageRowItem: CPAsyncImage {
     }
 }
 ```
+
+### 重新加载
+
+
 
 ### 通用 Section
 
