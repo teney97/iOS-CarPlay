@@ -1,6 +1,8 @@
+与你分享音频 CarPlay app 的开发过程与细节
+
 ## 前言
 
-负责了 CarPlay app 的研发，写下这个系列文章，想与你分享下开发经验。通过本系列文章，你可以学习到：
+负责了宝宝巴士 CarPlay app 的研发，写下这个系列文章，算是做个收尾吧，并且想与你分享下开发经验。通过本系列文章，你可以学习到：
 
 * CarPlay 是什么，适用于哪些类型的 app
 * 让你的工程兼容 UIScene
@@ -10,7 +12,7 @@
 
 CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用（iPad 不支持）。其前身是叫 iOS in the Car，2014 年更名为 CarPlay。
 
-简单地说，如果你的汽车支持 CarPlay，那么当你的汽车（通过数据线、蓝牙、Wi-Fi）连接 iPhone 时，汽车显示屏会自动切换到 CarPlay，iPhone 上所有支持 CarPlay 的 app 会自动显示在 CarPlay 中，你可以在 iPhone 设置（通用 - CarPlay 车载）中屏蔽指定 app 或调整顺序。Apple 对 CarPlay App 用户界面采用一致的设计，内容由 app 自己提供。
+简单地说，如果你的汽车支持 CarPlay，那么当你的汽车（通过数据线、蓝牙、Wi-Fi）连接 iPhone 时，汽车显示屏会自动切换到 CarPlay，iPhone 上所有支持 CarPlay 的 app 会自动显示在 CarPlay 中，你可以在 iPhone 设置（通用 > CarPlay 车载）中屏蔽指定 app 或调整顺序。Apple 对 CarPlay App 用户界面采用一致的设计，内容由 app 自己提供。
 
 控制 CarPlay 主要有 3 种方式：Siri、触屏显示屏、物理按键。
 
@@ -40,7 +42,7 @@ CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用（iPa
 
    对于 iOS 14 以上来说，它们就是两个 UIScene，因此 CarPlay app 和 iPhone app 可以一个处于后台一个处于前台。而对于 iOS 13 及更低版本的 CarPlay app，它和 iPhone app 是高度绑定的，只能共处前台或后台，用户体验不好。例如你在使用 CarPlay 导航时，手机将无法进行别的操作，否则会打断导航进程。
 
-5. 笔者开发的是音频类 CarPlay app，对其它类型的 app 没做了解，不过大致的开发流程应该差不多。开发一个音频类 CarPlay app 就是从 CPTemplateApplicationSceneDelegate 入口开始来构建 UI，填充数据。CarPlay app 的用户界面相对来说比较固定，但使用 CarPlay framework，Apple 支持更多可定制化的 UI 了。当车机连接后，音频将通过汽车扬声器播放。无论你使用 CarPlay framework 还是 MediaPlayer framework 来构建的 CarPlay app，都是通过 MPNowPlayingInfoCenter 和 MPRemoteCommandCenter 来提供播放界面的音频信息以及播放控制。只不过在 CarPlay framework 中，一些 remote command 事件通过 button handle 来处理了，比如播放模式、播放速率等等。当然如果你的 app 是音频类的话，应该已经支持了这些功能，因为 iPhone 锁屏界面以及控制中心的音频播放信息和播放控制也是通过它们提供。因此，我们只需要针对 CarPlay 做下优化或者功能增强就行。
+5. 笔者开发的是音频类 CarPlay app，对其它类型的 app 没做了解，不过大致的开发流程应该差不多。开发一个音频类 CarPlay app 就是从 CPTemplateApplicationSceneDelegate 入口开始来构建 UI，填充数据。CarPlay app 的用户界面相对来说比较固定，但使用 CarPlay framework，Apple 支持更多可定制化的 UI 了。当车机连接后，音频将通过汽车扬声器播放。无论你使用 CarPlay framework 还是 MediaPlayer framework 来构建的 CarPlay app，都是通过 MPNowPlayingInfoCenter 和 MPRemoteCommandCenter 来提供播放界面的音频信息以及响应播放控制事件。只不过在 CarPlay framework 中，一些 remote command 事件通过 button handle 来处理了，比如播放模式、播放速率等等。当然如果你的 app 是音频类的话，应该已经支持了这些功能，因为 iPhone 锁屏界面以及控制中心的音频播放信息和播放控制也是通过它们提供。因此，我们只需要针对 CarPlay 做下优化或者功能增强就行。
 
    * 设置和更新 MPNowPlayingInfoCenter 的 nowPlayingInfo，它包含当前播放音频的元数据，如标题、作者、时长等等。
    * 响应 MPRemoteCommandCenter 事件，对用户点击播放控制按钮做出响应，如播放、暂停、切换歌曲等等。
