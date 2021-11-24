@@ -167,6 +167,18 @@ public protocol CPTabBarTemplateDelegate : NSObjectProtocol {
 
 ![image-20211123153134163](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211123153134163.png)
 
+CPListTemplate 有个遵循 CPListTemplateDelegate 协议的 delegate 属性，CPListTemplateDelegate 就一个方法，在用户点击 item 时触发。
+
+```swift
+protocol CPListTemplateDelegate : NSObjectProtocol {
+    func listTemplate(_ listTemplate: CPListTemplate, didSelect item: CPListItem, completionHandler: @escaping () -> Void)
+}
+```
+
+注意这里有个 completionHandler 参数。当 `- listTemplate:didSelectListItem:completionHandler:` 方法被调用，在 completionHandler 调用之前，didSelectListItem 上会在右边显示一个活动指示器。最佳实践是，
+
+在调用 `MPPlayableContentDataSource` 和 `MPPlayableContentDelegate` 中的 completion handlers 之前，确保将要播放的内容实际上已经准备好播放或显示，在此期间显示加活动指示器。
+
 #### CPListImageRowItem
 
 可以用来展示由一组专辑组成的模块。使用文本和一组图片初始化，文本可以展示模块名称，图片可以展示模块里前 n 个专辑的封面。
@@ -231,6 +243,10 @@ enum CPListItemAccessoryType : Int {
 ```
 
 ![image-20211123154215694](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211123154215694.png)
+
+需要注意一点，如果 CPListItem 的 detailText 为 nil 的话，view 高度会减小，并将 text 居中显示，如下图所示，这会影响美观以及整体统一性。因此，你可以考虑当音频没有副标题时，使用音频时长或其它数据填充 detailText。
+
+![image-20211124091144806](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211124091144806.png)
 
 #### CPNowPlayingTemplate
 
@@ -317,11 +333,7 @@ CarPlay uses MPRemoteCommandCenter to observe changes to the repeat mode and upd
 
 ### 页面跳转
 
-还记得在 CarPlay app 入口 [- templateApplicationScene:didConnectInterfaceController:](https://developer.apple.com/documentation/carplay/cptemplateapplicationscenedelegate/3578119-templateapplicationscene?language=objc) 中的 CPInterfaceController 吗，它作为我们 CarPlay app 的入口 controller，我们将一个 template 作为 rootTemplate 赋值给它。当我们要 push 一个 template 时也是靠它，它就类似于 UINavigationController。
-
- 
-
-在调用 `MPPlayableContentDataSource` 和 `MPPlayableContentDelegate` 中的 completion handlers 之前，确保将要播放的内容实际上已经准备好播放或显示，在此期间显示加活动指示器。
+还记得在 CarPlay app 入口 [- templateApplicationScene:didConnectInterfaceController:](https://developer.apple.com/documentation/carplay/cptemplateapplicationscenedelegate/3578119-templateapplicationscene?language=objc) 中的 CPInterfaceController 吗，它作为我们 CarPlay app 的入口 controller，我们将一个 template 作为 rootTemplate 赋值给它。当我们要进行页面跳转时也是靠它，有点类似于 UINavigationController，它支持 push、pop、present、dismiss 等等操作（present、dismiss 操作仅 CPActionSheetTemplate、CPVoiceControlTemplate、CPAlertTemplate）。 
 
 
 
@@ -421,45 +433,6 @@ extension CPListImageRowItem: CPAsyncImage {
 
 
 
-### 通用 Section
-
-开发音频类 CarPlay app，你应该需要以下通用 Section。
-
-```Swift
-@available(iOS 14, *)
-class CPCommonSection: NSObject {
-    
-    enum SectionType {
-        case loading
-        case playAll
-        case nonePlayRecord
-    }
-
-    static func loadingSection() -> CPListSection {
-        let item = CPListItem(text: "正在加载中", detailText: nil)
-        item.userInfo = SectionType.loading
-        let section = CPListSection(items: [item])
-        return section
-    }
-    
-    static func playAllSection(count: Int) -> CPListSection {
-        let item = CPListItem(text: "播放全部", detailText: "\(count)首", image: UIImage(named: "CP_play"))
-        item.userInfo = SectionType.playAll
-        let section = CPListSection(items: [item])
-        return section
-    }
-    
-    static func nonePlayRecordSection() -> CPListSection {
-        let item = CPListItem(text: "还没有播放记录哦", detailText: nil)
-        item.userInfo = SectionType.nonePlayRecord
-        let section = CPListSection(items: [item])
-        return section
-    }
-}
-```
-
-
-
 ### 埋点
 
 一些埋点可能需要通过投机取巧的方法，比如在哪个页面触发了返回按钮，可以通过 `templateDidAppear`、`templateWillDisappear` 等方法配合实现。
@@ -473,7 +446,7 @@ class CPCommonSection: NSObject {
 * 数据可以存在 CPListItem.userInfo，不需要扩展属性。它是强引用，需要注意循环引用问题。
 * CarPlay Simulator 的语言是跟随 iPhone Simulator 的，真机是否也如此我没有测试过。
 * CarPlay Framework 需要设置为弱引用 optional（Target > Build phases > Link Binary With Libraries），否则在 iOS 14 以下启动 App 会 crash。
-* CarPlay 断开连接，建议暂停音乐
+* CarPlay 断开连接时，建议暂停音乐
 
 
 
