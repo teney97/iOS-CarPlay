@@ -33,6 +33,8 @@ defaults write com.apple.iphonesimulator CarPlayExtraOptions -bool YES
 
 参考文档：[使用 CarPlay Simulator 运行和调试 CarPlay App](https://developer.apple.com/documentation/carplay/using_the_carplay_simulator?language=objc)
 
+如果你是 M1 Mac，那可能无法使用 CarPlay Simulator。如果你的 Xcode 以 Rosetta 模式运行，那么启动 CarPlay app 会直接 crash。将 Simulator 也以 Rosetta 运行，结果无效。这个问题暂时没有解决方案。https://issueexplorer.com/issue/mapbox/mapbox-navigation-ios/3355。
+
 ### 声明一个 CarPlay scene
 
 在 Info.plist 中声明一个 scene。
@@ -167,7 +169,7 @@ public protocol CPTabBarTemplateDelegate : NSObjectProtocol {
 
 ![image-20211123153134163](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211123153134163.png)
 
-CPListTemplate 有个遵循 CPListTemplateDelegate 协议的 delegate 属性，CPListTemplateDelegate 就一个方法，在用户点击 item 时触发。
+CPListTemplate 有个遵循 CPListTemplateDelegate 协议的 delegate 属性，CPListTemplateDelegate 就一个方法，在用户点击 item 时触发，我们可以在该方法实现中 push 其它 Template。
 
 ```swift
 protocol CPListTemplateDelegate : NSObjectProtocol {
@@ -175,9 +177,7 @@ protocol CPListTemplateDelegate : NSObjectProtocol {
 }
 ```
 
-注意这里有个 completionHandler 参数。当 `- listTemplate:didSelectListItem:completionHandler:` 方法被调用，在 completionHandler 调用之前，didSelectListItem 上会在右边显示一个活动指示器。最佳实践是，
-
-在调用 `MPPlayableContentDataSource` 和 `MPPlayableContentDelegate` 中的 completion handlers 之前，确保将要播放的内容实际上已经准备好播放或显示，在此期间显示加活动指示器。
+注意这里有个 completionHandler 参数。当 `- listTemplate:didSelectListItem:completionHandler:` 方法被调用，在 completionHandler 调用之前，didSelectListItem 上会在右边显示一个活动指示器。最佳实践是，在要播放的内容已经准备好，或者页面跳转完成时调用（`- pushTemplate:animated:completion:` 的 completion 中）。当然，你也要保证 completionHandler 被调用，比如提前退出时，否则活动指示器会一直存在。
 
 #### CPListImageRowItem
 
@@ -335,14 +335,6 @@ CarPlay uses MPRemoteCommandCenter to observe changes to the repeat mode and upd
 
 还记得在 CarPlay app 入口 [- templateApplicationScene:didConnectInterfaceController:](https://developer.apple.com/documentation/carplay/cptemplateapplicationscenedelegate/3578119-templateapplicationscene?language=objc) 中的 CPInterfaceController 吗，它作为我们 CarPlay app 的入口 controller，我们将一个 template 作为 rootTemplate 赋值给它。当我们要进行页面跳转时也是靠它，有点类似于 UINavigationController，它支持 push、pop、present、dismiss 等等操作（present、dismiss 操作仅 CPActionSheetTemplate、CPVoiceControlTemplate、CPAlertTemplate）。 
 
-
-
-**Best Practices**
-
-* 在调用 `MPPlayableContentDataSource` 和 `MPPlayableContentDelegate` 中的 completion handlers 之前，确保将要播放的内容实际上已经准备好播放或显示，在此期间显示加活动指示器。
-* 对于那些不用 `Tabs` 而只用 `TableView` 的 App，`TableView` 必须返回至少一项内容。
-* CarPlay 会显示一个加载活动指示器，如果 App 在一定时限内没有返回内容就会超时。如果你的 App 需要一些初始的设置，比如登录凭据，在页面的第一行应该提示用户 App 当前的状态，通过填充一个 `MPContentItem`，MPContentItem is neither playable nor a container indicating the state of the app to the user。
-
 ### 图片
 
 #### 图标和图片
@@ -351,7 +343,7 @@ CarPlay uses MPRemoteCommandCenter to observe changes to the repeat mode and upd
 
 #### 异步图片
 
-* CarPlay 不支持 gif 图片，配置会导致 crash。
+* CarPlay 不支持 GIF 图片，配置会导致 crash。笔者尝试取出 GIF 图的第一帧，发现还是不支持，也许是我的方式有问题。
 * asyncImage 也需要适配下 scale，否则会模糊。
 * 可以对 CPListItem 和 CPListImageRowItem 扩展下 asyncImage 的方法，方便使用。
 
@@ -429,26 +421,28 @@ extension CPListImageRowItem: CPAsyncImage {
 }
 ```
 
-### 重新加载
+### 重新加载数据
 
+网络不好的情况下启动 CarPlay app，可能就会存在请求超时，CarPlay app 中无数据。处理方式有以下几种：
 
+* 不重新加载。如果是首页，则用户需要重新启动 CarPlay app 才能重新加载；如果是子页面，则用户需要退出并重新进入子页面才能重新加载。看了网易云 CarPlay app 就是这样处理的，不过它的首页有固定的几个 item，倒是不影响体验。如果你的首页内容全部取自服务端，那不建议以这种方式处理；
+* 如果 rootTemplate 是 CPTabBarTemplate，那么你可以在 `- tabBarTemplate:didSelectTemplate:` 时机进行重新加载操作；
+* 对于第二种方式，重新加载对用户来说是无感知的，因为你没办法或者不方便自己添加个活动指示器。我的做法，我也认为是比较好的方案是，在请求数据的过程中，添加个加载中 item（比如使用 CPListTemplate 并显示 “正在加载中”），如果请求失败，则更新 item 为重试 item（比如使用 CPListTemplate 并显示 “加载失败，点击重试”）。当用户点击重试 item 时，更新 item 为加载中 item，并重新请求数据。对于每个需要从服务端拉取数据的页面都可以这样处理。
+* 是否需要刷新？如果想要允许使用 CarPlay app 的过程中去刷新数据，那么可以通过第二种方式处理。不过我认为，用户单次使用 CarPlay 的时间不会很长，没有必要做刷新，下次启动的时间拉取新数据就好。因此，我只针对首次数据加载失败的情况做了重新加载处理。
 
 ### 埋点
 
-一些埋点可能需要通过投机取巧的方法，比如在哪个页面触发了返回按钮，可以通过 `templateDidAppear`、`templateWillDisappear` 等方法配合实现。
+一些埋点可能需要通过投机取巧的方法，比如在哪个页面触发了返回按钮，可以通过 `templateDidAppear`、`templateWillDisappear` 等方法配合实现。emmm... 加了埋点后代码一点儿也不简洁了。
 
-
-
-## 注意点
+## 注意点 & 最佳实践
 
 * 单例问题。CarPlay 用到了单例类，CarPlay app 关闭，但 iPhone app 没关闭，进程是还在的，单例还未释放，可能会造成一些问题。可以在 `- templateApplicationScene:didConnectInterfaceController:` 中初始化单例，在 `- templateApplicationScene:didDisconnectInterfaceController:` 中释放单例。
 * TabBar，如果 tabImage 为 nil，那么该 tabBarItem 将会使用 UITabBarItem.SystemItem.more。
 * 数据可以存在 CPListItem.userInfo，不需要扩展属性。它是强引用，需要注意循环引用问题。
 * CarPlay Simulator 的语言是跟随 iPhone Simulator 的，真机是否也如此我没有测试过。
 * CarPlay Framework 需要设置为弱引用 optional（Target > Build phases > Link Binary With Libraries），否则在 iOS 14 以下启动 App 会 crash。
-* CarPlay 断开连接时，建议暂停音乐
-
-
+* CarPlay 断开连接时，建议暂停音乐。
+* Template 页面最好至少显示一项内容，特别是你没有使用 CPTabBarTemplate 作为 rootTemplate 的情况，否则页面将一片空白。例如，在最近播放页面，当没有播放记录时，我填充了一个 CPListTemplate 并显示 “当前没有播放记录”。
 
 ## 常见问题解答
 
