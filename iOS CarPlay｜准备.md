@@ -65,7 +65,7 @@ CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用（iPa
 * [WWDC17 - 开发无线 CarPlay 车载系统](https://developer.apple.com/wwdc17/717)
 * [WWDC17 - 让您的 App 支持 CarPlay 车载](https://developer.apple.com/wwdc17/719)
 * [WWDC18 - CarPlay 车载音频和导航 App](https://developer.apple.com/wwdc18/213)
-* [WWDC19 - CarPlay 车载系统改进](WWDC19 - CarPlay 车载系统改进)
+* [WWDC19 - CarPlay 车载系统改进](https://developer.apple.com/wwdc19/252)
 * [WWDC20 - 使用 CarPlay 车载系统为你的 App 提速](https://developer.apple.com/wwdc20/10635)
 
 ### 文档
