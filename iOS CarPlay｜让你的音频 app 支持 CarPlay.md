@@ -1,6 +1,6 @@
 ## 开发 CarPlay 音频 App
 
-从 iOS 14 开始，你可以使用 CarPlay framework 来开发音频 CarPlay app（如果是导航类 app，在 iOS 12 就可以使用 CarPlay Framework），它提供了一些 UI 模版来支持开发者自定义界面；如果你要兼容 iOS 13 及更早版本的话需要使用 MediaPlayer framework 开发，它向前兼容。如果你的 app 需要在 iOS 14 及更高版本上使用 CarPlay framework，并且兼容 iOS 13 级更早版本的话，就要维护两套代码，开发工作量可能接近 double。笔者仅支持了 iOS 14 及更高版本，因此在下篇文章中会详细讲解开发细节。如果你想支持低版本的话也可以看看笔者对「WWDC17 - 让您的 App 支持 CarPlay 车载」和「WWDC18 - CarPlay 车载音频和导航 App」做的笔记。
+从 iOS 14 开始，你可以使用 CarPlay framework 来开发音频 CarPlay app（如果是导航类 app，在 iOS 12 就可以使用 CarPlay framework），它提供了一些 UI 模版来支持开发者自定义界面；如果你要兼容 iOS 13 及更早版本的话需要使用 MediaPlayer framework 开发，它向前兼容。如果你的 app 需要在 iOS 14 及更高版本上使用 CarPlay framework，并且兼容 iOS 13 级更早版本的话，就要维护两套代码，开发工作量可能接近 double。笔者仅支持了 iOS 14 及更高版本，因此在下篇文章中会详细讲解开发细节。如果你想支持低版本的话也可以看看笔者对「WWDC17 - 让您的 App 支持 CarPlay 车载」和「WWDC18 - CarPlay 车载音频和导航 App」做的笔记。
 
 ### 申请权限并配置工程
 
@@ -222,14 +222,6 @@ let listItem = CPListItem(text: audioName,
 
 ![image-20211123143752733](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211123143752733.png)
 
-使用 CPListItem 来展示音频，你还可以通过 isPlaying 属性来显示正在播放的标志：
-
-```swift
-var isPlaying: Bool
-```
-
-![image-20211125115803820](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211125115803820.png)
-
 对于专辑 item，还需要右边的导航箭头来和音频 item 做区分，指示用户点击可以打开音频列表页面，可以使用以下构造器初始化 CPListItem。
 
 ```swift
@@ -269,14 +261,14 @@ let playbackRateButton = CPNowPlayingPlaybackRateButton() { ... }
 nowPlayingTemplate.updateNowPlayingButtons([repeatButton, playbackRateButton])
 ```
 
-无论你使用 CarPlay framework 还是 MediaPlayer framework 来构建的 CarPlay app，都是通过 MPNowPlayingInfoCenter 和 MPRemoteCommandCenter 来提供播放界面的音频信息以及响应播放控制事件。只不过在 CarPlay framework 中，一些 remote command 事件通过 button handle 来处理了，比如播放模式、播放速率等等。当然如果你的 app 是音频类的话，应该已经支持了这些功能，因为 iPhone 锁屏界面以及控制中心的音频播放信息和播放控制也是通过它们提供。因此，我们只需要针对 CarPlay 做下优化或者功能增强就行。我们具体要做的是：
+无论你使用 CarPlay framework 还是 MediaPlayer framework 来构建的 CarPlay app，都是通过 MPNowPlayingInfoCenter 和 MPRemoteCommandCenter 来提供播放界面的音频信息以及响应播放控制事件。只不过在 CarPlay framework 中，一些 remote command 事件通过 button handler 来处理了，比如播放模式、播放速度等等。当然如果你的 app 是音频类的话，应该已经支持了这些功能，因为 iPhone 锁屏界面以及控制中心的音频播放信息和播放控制也是通过它们提供。因此，我们只需要针对 CarPlay 做下优化或者功能增强就行。我们具体要做的是：
 
 * 设置和更新 MPNowPlayingInfoCenter 的 nowPlayingInfo，它包含当前播放音频的元数据，如标题、作者、时长等等。时机：
 
   * 切换音频（上一首、下一首等等）
   * 暂停、恢复、停止播放
   * seek（跳过片头、拖动进度等等）
-  * 更新播放速率（CPNowPlayingTemplate 中播放速率按钮的显示状态）
+  * 更新播放速度（CPNowPlayingTemplate 中播放速度按钮的显示状态）。如果当前音频不在播放状态，需将播放速度设置为 0
   * ...
 
 ```swift
@@ -298,26 +290,39 @@ infoCenter.nowPlayingInfo = [MPMediaItemPropertyTitle: "Style",
                             … ]
 ```
 
-需要注意一点，对于播放进度也就是当前音频已经播放的时长的更新，系统会根据先前提供的已播放时长和播放速率自动推断出来。因此不需要也不推荐频繁更新 nowPlayingInfo，这代价很大。
+需要注意一点，对于播放进度也就是当前音频已经播放的时长的更新，系统会根据先前提供的**已播放时长**和**播放速度**自动推断出来。因此不需要也不推荐频繁更新 nowPlayingInfo，这代价很大。
 
 * 除了 nowPlayingInfo，还有一些状态需要通过其它方式同步到 CarPlay app，比如：
 
   * 音频播放状态：暂停/播放（CPNowPlayingTemplate 中播放按钮的显示状态）
 
   ```objectivec
+  typedef NS_ENUM(NSUInteger, MPNowPlayingPlaybackState) {
+      MPNowPlayingPlaybackStateUnknown = 0,
+      MPNowPlayingPlaybackStatePlaying,
+      MPNowPlayingPlaybackStatePaused,
+      MPNowPlayingPlaybackStateStopped,
+      MPNowPlayingPlaybackStateInterrupted
+  };
+  
   if (@available(iOS 13.0, *)) {
       MPNowPlayingInfoCenter.defaultCenter.playbackState = MPNowPlayingPlaybackStatePlaying; 
-      // MPNowPlayingPlaybackStatePaused、MPNowPlayingPlaybackStateStopped
   }
   ```
   
   * 播放模式状态：顺序循环/单曲循环（CPNowPlayingTemplate 中播放模式按钮的显示状态）
   
   ```objectivec
-  MPRemoteCommandCenter.sharedCommandCenter.changeRepeatModeCommand.currentRepeatType = repeatType;
+  typedef NS_ENUM(NSInteger, MPRepeatType) {
+      MPRepeatTypeOff,    /// Nothing is repeated during playback.
+      MPRepeatTypeOne,    /// Repeat a single item indefinitely.
+      MPRepeatTypeAll,    /// Repeat the current container or playlist indefinitely.
+  };
+  
+  MPRemoteCommandCenter.sharedCommandCenter.changeRepeatModeCommand.currentRepeatType = MPRepeatTypeOne;
   ```
 
-下图中的音频名称、音频描述、音频时长、当前播放进度、播放模式、播放速率等音频播放信息，都是通过以上方式同步显示到 CPNowPlayingTemplate 上的。你的音频 app 之前应该已经实现了该功能以将音频播放信息同步到 iPhone 锁屏界面以及控制中心，现在只需要检查下 CarPlay app 的 CPNowPlayingTemplate 中的音频播放信息是否准确即可。
+下图中的音频名称、音频描述、音频时长、当前播放进度、播放模式、播放速度等音频播放信息，都是通过以上方式同步显示到 CPNowPlayingTemplate 上的。你的音频 app 之前应该已经实现了该功能以将音频播放信息同步到 iPhone 锁屏界面以及控制中心，现在只需要检查下 CarPlay app 的 CPNowPlayingTemplate 中的音频播放信息是否准确即可。
 
 ![image-20211116113630475](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211116113630475.png)
 
@@ -331,13 +336,11 @@ infoCenter.nowPlayingInfo = [MPMediaItemPropertyTitle: "Style",
   * changeRepeatModeCommand
   * changePlaybackRateCommand
   * ...
-* 使用 CarPlay framework 时，changeRepeatModeCommand、changePlaybackRateCommand 不再由 MPRemoteCommandCenter 触发，而是通过 CPNowPlayingRepeatButton、CPNowPlayingPlaybackRateButton 的 handle 监听。但 command.enabled 还是要开启。
+* 使用 CarPlay framework 时，changeRepeatModeCommand、changePlaybackRateCommand 不再由 MPRemoteCommandCenter 触发，而是通过 CPNowPlayingRepeatButton、CPNowPlayingPlaybackRateButton 的 handler 处理，但 command.enabled 还是要开启。例如：
+  * 当 command.enabled 为 true 时，用户点击了播放模式按钮，CPNowPlayingRepeatButton 的 handler 就会被触发，然后你可以更新 app 播放模式，并将播放模式状态通过上述方式同步到 CarPlay。如果你的 app 还支持随机播放模式，可以自定义一个 CPNowPlayingButton，配合 CPNowPlayingRepeatButton 完成 3 种模式的切换。
+  * 由于只能得知用户点击了按钮，而不知道用户点击按钮的具体意图，因此 CPNowPlayingPlaybackRateButton handler 的最佳实践是，设定一个播放速度范围，当用户点击时，增加 app 播放速度，并通过更新 nowPlayingInfo 同步到 CarPlay。如果当前音频正在以最快的支持速度播放，那么继续增加播放速度就将其调到最小速度，以此循环。
 
-```
-// Discussion
-CPNowPlayingRepeatButton is a concrete subclass of CPNowPlayingButton. Use the button’s handler to invoke your existing functionality for cycling through repeat modes, using the same MPChangeRepeatModeCommand that you provide to MPRemoteCommandCenter.
-CarPlay uses MPRemoteCommandCenter to observe changes to the repeat mode and updates the button’s appearance accordingly.
-```
+### 最佳实践
 
 #### 使用 userInfo 存储数据
 
@@ -350,7 +353,7 @@ var userInfo: Any?
 
 #### 通过 isEnabled 设置 item 的可交互性（iOS 15）
 
-CPListItem、CPListImageRowItem 都有个 [isEnabled](https://developer.apple.com/documentation/carplay/cplistitem/3751895-enabled?language=objc) 属性，它用来设置 item 的可交互性（默认值为 true）。isEnabled 设置为 false 的 item 将不可点击，也就是不会触发 `- listTemplate:didSelectListItem:completionHandler:` 方法。最佳实践是，将 “还没有播放记录”、“正在加载中” 这些本身就没有交互的 item 的 isEnabled 设置为 false，这样呈现的 UI 效果更好，而且你也不用在 `- listTemplate:didSelectListItem:completionHandler:`  对这些 item 做 guard 处理了。不过该 API 在 iOS 15 开始才支持 😭，但我们还有其它方式可以避免在 didSelectListItem 方法中做 guard 处理，那就是用 item 的 handle 属性。
+CPListItem、CPListImageRowItem 都有个 [isEnabled](https://developer.apple.com/documentation/carplay/cplistitem/3751895-enabled?language=objc) 属性，它用来设置 item 的可交互性（默认值为 true）。isEnabled 设置为 false 的 item 将不可点击，也就是不会触发 `- listTemplate:didSelectListItem:completionHandler:` 方法。最佳实践是，将 “还没有播放记录”、“正在加载中” 这些本身就没有交互的 item 的 isEnabled 设置为 false，这样呈现的 UI 效果更好，而且你也不用在 `- listTemplate:didSelectListItem:completionHandler:`  对这些 item 做 guard 处理了。不过该 API 在 iOS 15 开始才支持 😭，但我们还有其它方式可以避免在 didSelectListItem 方法中做 guard 处理，那就是用 item 的 handler 属性。
 
 ```swift
 // A Boolean value that indicates if the item is enabled.
@@ -360,14 +363,14 @@ var isEnabled: Bool
 
 #### 使用 handle 响应 item 的点击事件
 
-CPListItem、CPListImageRowItem 都有个 [handle](https://developer.apple.com/documentation/carplay/cplistitem/3667716-handler?language=objc) 属性，用来响应 item 的点击事件。如果你给 item 设置了 handle，那么点击 item 将触发 handle 而不触发 didSelectListItem 方法。
+CPListItem、CPListImageRowItem 都有个 [handler](https://developer.apple.com/documentation/carplay/cplistitem/3667716-handler?language=objc) 属性，用来响应 item 的点击事件。如果你给 item 设置了 handler，那么点击 item 将触发 handler 而不触发 didSelectListItem 方法。
 
 ```swift
 // An optional action block, fired when the user selects this item in a list template.
 var handler: ((CPSelectableListItem, @escaping () -> Void) -> Void)?
 ```
 
-我们可以利用 handle 把一些特殊 item 的点击事件剥离出来，而不是全部放到 `- listTemplate:didSelectListItem:completionHandler:` 处理，这样可以**提高代码可维护性**。对于上面说的 isEnabled 仅在 iOS 15 以上才支持的问题，我们也可以像下面这样处理，以避免在 didSelectListItem 方法中做 guard 处理。
+我们可以利用 handler 把一些特殊 item 的点击事件剥离出来，而不是全部放到 `- listTemplate:didSelectListItem:completionHandler:` 处理，这样可以**提高代码可维护性**。对于上面说的 isEnabled 仅在 iOS 15 以上才支持的问题，我们也可以像下面这样处理，以避免在 didSelectListItem 方法中做 guard 处理。
 
 ```swift
 let item = CPListItem(text: "正在加载中", detailText: nil)
@@ -380,11 +383,21 @@ if #available(iOS 15.0, *) {
 }
 ```
 
+#### 通过 isPlaying 属性来显示正在播放的标志
 
+使用 CPListItem 来展示音频，你还可以通过 isPlaying 属性来显示正在播放的标志：
+
+```swift
+var isPlaying: Bool
+```
+
+![image-20211125115803820](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211125115803820.png)
 
 ### 页面跳转
 
-还记得在 CarPlay app 入口 [- templateApplicationScene:didConnectInterfaceController:](https://developer.apple.com/documentation/carplay/cptemplateapplicationscenedelegate/3578119-templateapplicationscene?language=objc) 中的 CPInterfaceController 吗，它作为我们 CarPlay app 的入口 controller，我们将一个 template 作为 rootTemplate 赋值给它。当我们要进行页面跳转时也是靠它，有点类似于 UINavigationController，它支持 push、pop、present、dismiss 等等操作（present、dismiss 操作仅 CPActionSheetTemplate、CPVoiceControlTemplate、CPAlertTemplate）。
+还记得在 CarPlay app 入口 [- templateApplicationScene:didConnectInterfaceController:](https://developer.apple.com/documentation/carplay/cptemplateapplicationscenedelegate/3578119-templateapplicationscene?language=objc) 中的 CPInterfaceController 吗，它作为我们 CarPlay app 的入口 controller，我们将一个 template 作为 rootTemplate 赋值给它。当我们要进行页面跳转时也是靠它，有点类似于 UINavigationController，它支持 push、pop、present、dismiss 等等操作（present、dismiss 操作仅 CPActionSheetTemplate、CPVoiceControlTemplate、CPAlertTemplate）。对于音频 app，一般 push 操作就够用，子页面的左上角都自带返回按钮的。
+
+
 
 ### 图片
 
@@ -392,9 +405,13 @@ if #available(iOS 15.0, *) {
 
 可以看看 [CarPlay - 设计指南](https://developer.apple.com/design/human-interface-guidelines/carplay/overview/introduction/)，并将它发给你的 PM 和 UI。
 
+#### 深色/浅色模式
+
+
+
 #### 异步图片
 
-* CarPlay 不支持 GIF 图片，配置会导致 crash。笔者尝试取出 GIF 图的第一帧，发现还是不支持，也许是我的方式有问题。
+* CarPlay 不支持 GIF 图片，配置会导致 crash。笔者尝试取出 GIF 图的第一帧，发现还是不支持，或许是我的方式有问题。
 * asyncImage 也需要适配下 scale，否则会模糊。
 * 可以对 CPListItem 和 CPListImageRowItem 扩展下 asyncImage 的方法，方便使用。
 
@@ -478,23 +495,30 @@ extension CPListImageRowItem: CPAsyncImage {
 
 * 不重新加载。如果是首页，则用户需要重新启动 CarPlay app 才能重新加载；如果是子页面，则用户需要退出并重新进入子页面才能重新加载。看了网易云 CarPlay app 就是这样处理的，不过它的首页有固定的几个 item，倒是不影响体验。如果你的首页内容全部取自服务端，那不建议以这种方式处理；
 * 如果 rootTemplate 是 CPTabBarTemplate，那么你可以在 `- tabBarTemplate:didSelectTemplate:` 时机进行重新加载操作；
-* 对于第二种方式，重新加载对用户来说是无感知的，因为你没办法或者不方便自己添加个活动指示器。我的做法，我也认为是比较好的方案是，在请求数据的过程中，添加个加载中 item（比如使用 CPListTemplate 并显示 “正在加载中”），如果请求失败，则更新 item 为重试 item（比如使用 CPListTemplate 并显示 “加载失败，点击重试”）。当用户点击重试 item 时，更新 item 为加载中 item，并重新请求数据。对于每个需要从服务端拉取数据的页面都可以这样处理。
+* 对于第二种方式，重新加载对用户来说是无感知的，因为你没办法或者不方便自己添加个活动指示器。我的方案是，在请求数据的过程中，添加个 loading item（比如使用 CPListItem 并显示 “正在加载中”）。如果请求失败，则更新 item 为 failure item（比如使用 CPListItem 并显示 “加载失败，点击重试”）。当用户点击 failure item 时，更新 item 为 loading item，并重新请求数据。对于每个需要从服务端拉取数据的页面都可以这样处理。
 * 是否需要刷新？如果想要允许使用 CarPlay app 的过程中去刷新数据，那么可以通过第二种方式处理。不过我认为，用户单次使用 CarPlay 的时间不会很长，没有必要做刷新，下次启动的时间拉取新数据就好。因此，我只针对首次数据加载失败的情况做了重新加载处理。
+
+### 关注弱网以及无网环境下的使用体验
+
+在 WWDC 或 相关文档中，Apple 就多次提到要关注弱网以及无网环境下的用户体验，因为驾驶过程中可能会经过网络不好的路段或区域。例如上面提到的 ”请求超时，重新加载数据“ 问题、CPNowPlayingTemplate 中数据同步以及播放控制事件是否出现异常等等。
 
 ### 埋点
 
-一些埋点可能需要通过投机取巧的方法，比如在哪个页面触发了返回按钮，可以通过 `templateDidAppear`、`templateWillDisappear` 等方法配合实现。emmm... 加了埋点后代码一点儿也不简洁了。
+一些埋点可能需要通过投机取巧的方法。比如在哪个页面触发了返回按钮，可以通过 `- templateDidAppear`、`- templateWillDisappear` 等方法配合实现。emmm... 加了埋点后代码一点儿也不简洁了。
+
+### 测试
+
+[使用 CarPlay Simulator 运行和调试 CarPlay App](https://developer.apple.com/documentation/carplay/using_the_carplay_simulator?language=objc) 中列举了一些在 CarPlay Simulator 上无法测试的功能。
 
 ## 注意点 & 最佳实践
 
 * 单例问题。CarPlay 用到了单例类，CarPlay app 关闭，但 iPhone app 没关闭，进程是还在的，单例还未释放，可能会造成一些问题。可以在 `- templateApplicationScene:didConnectInterfaceController:` 中初始化单例，在 `- templateApplicationScene:didDisconnectInterfaceController:` 中释放单例。
 * TabBar，如果 tabImage 为 nil，那么该 tabBarItem 将会使用 UITabBarItem.SystemItem.more。
-* 数据可以存在 CPListItem.userInfo，不需要扩展属性。它是强引用，需要注意循环引用问题。
-* CarPlay Simulator 的语言是跟随 iPhone Simulator 的，真机是否也如此我没有测试过。
-* CarPlay Framework 需要设置为弱引用 optional（Target > Build phases > Link Binary With Libraries），否则在 iOS 14 以下启动 App 会 crash。
+* CarPlay 的语言是跟随 iPhone 的，Simulator 也是如此。
+* CarPlay framework 需要设置为弱引用 optional（Target > Build phases > Link Binary With Libraries），否则在 iOS 12 以下启动 App 会 crash。
 * CarPlay 断开连接时，建议暂停音乐。
 * CarPlay 断开连接时，可以通过 Memory Graph 检查下有无内存泄漏。
-* Template 页面最好至少显示一项内容，特别是你没有使用 CPTabBarTemplate 作为 rootTemplate 的情况，否则页面将一片空白。例如，在最近播放页面，当没有播放记录时，我填充了一个 CPListTemplate 并显示 “当前没有播放记录”。
+* Template 页面最好至少显示一项内容，特别是你没有使用 CPTabBarTemplate 作为 rootTemplate 的情况，否则页面将一片空白，影响用户体验。例如，在最近播放页面，当没有播放记录时，填充一个 CPListItem 并显示 “当前没有播放记录”。
 
 ## 常见问题解答
 
