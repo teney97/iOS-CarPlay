@@ -24,9 +24,7 @@ CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用（iPa
 * 汽车制造商的 App 可以提供特定于车辆的控制和显示，让司机在不离开 CarPlay 的情况下保持联系。
 * iOS 14 新功能，支持 EV 充电、停车和快餐订购 App。此外，所有 CarPlay App 都可以利用 CarPlay framework 提供一致的设计，并针对在汽车中的使用进行了优化。
 
-## CarPlay App 如何开发
-
-大致步骤如下：
+## CarPlay App 开发流程概览
 
 1. 首先需要确定你的 app 是否适用于 CarPlay，然后去开发者网站申请对应 app 类型的 CarPlay 权限，并对工程进行配置。只有这样你的工程才能使用 CarPlay Simulator。因此如果你计划要开发 CarPlay app 的话，最好提前去申请权限，因为 Apple 审核还要时间。在此期间可以看看相关开发文档，等权限申请下来就可以使用 CarPlay Simulator 调试开发啦。参考文档：[申请 CarPlay 权限](https://developer.apple.com/documentation/carplay/requesting_the_carplay_entitlements?language=objc)。
 
@@ -42,7 +40,7 @@ CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用（iPa
 
    对于 iOS 14 以上来说，它们就是两个 UIScene，因此 CarPlay app 和 iPhone app 可以一个处于后台一个处于前台。而对于 iOS 13 及更低版本的 CarPlay app，它和 iPhone app 是高度绑定的，只能共处前台或后台，用户体验不好。例如你在使用 CarPlay 导航时，手机将无法进行别的操作，否则会打断导航进程。
 
-5. 笔者开发的是音频类 CarPlay app，对其它类型的 app 没做了解，不过大致的开发流程应该差不多。开发一个音频类 CarPlay app 就是从 CPTemplateApplicationSceneDelegate 入口开始来构建 UI，填充数据。CarPlay app 的用户界面相对来说比较固定，但使用 CarPlay framework，Apple 支持更多可定制化的 UI 了。当车机连接后，音频将通过汽车扬声器播放。无论你使用 CarPlay framework 还是 MediaPlayer framework 来构建的 CarPlay app，都是通过 MPNowPlayingInfoCenter 和 MPRemoteCommandCenter 来提供播放界面的音频信息以及响应播放控制事件。只不过在 CarPlay framework 中，一些 remote command 事件通过 button handle 来处理了，比如播放模式、播放速率等等。当然如果你的 app 是音频类的话，应该已经支持了这些功能，因为 iPhone 锁屏界面以及控制中心的音频播放信息和播放控制也是通过它们提供。因此，我们只需要针对 CarPlay 做下优化或者功能增强就行。
+5. 笔者开发的是音频类 CarPlay app，对其它类型的 app 没做了解，不过大致的开发流程应该差不多。开发一个音频类 CarPlay app 就是从 CPTemplateApplicationSceneDelegate 入口开始来构建 UI，填充数据。CarPlay app 的用户界面相对来说比较固定，但使用 CarPlay framework，Apple 支持更多可定制化的 UI 了。当车机连接后，音频将通过汽车扬声器播放。无论你使用 CarPlay framework 还是 MediaPlayer framework 来构建的 CarPlay app，都是通过 MPNowPlayingInfoCenter 和 MPRemoteCommandCenter 来提供播放界面的音频信息以及响应播放控制事件。只不过在 CarPlay framework 中，一些 remote command 事件通过 button handler 来处理了，比如播放模式、播放速率等等。当然如果你的 app 是音频类的话，应该已经支持了这些功能，因为 iPhone 锁屏界面以及控制中心的音频播放信息和播放控制也是通过它们提供。因此，我们只需要针对 CarPlay 做下优化或者功能增强就行。
 
    * 设置和更新 MPNowPlayingInfoCenter 的 nowPlayingInfo，它包含当前播放音频的元数据，如标题、作者、时长等等。
    * 响应 MPRemoteCommandCenter 事件，对用户点击播放控制按钮做出响应，如播放、暂停、切换歌曲等等。
@@ -56,7 +54,7 @@ CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用（iPa
 
 6. 然后，就是开发啦！此处省略 ... 字。
 
-7. 最后，在真实环境（汽车中）测试。Apple 建议我们多测试弱网以及无网环境的用户体验，因为驾驶过程中可能会经过网络不好的路段或区域。[使用 CarPlay Simulator 运行和调试 CarPlay App](https://developer.apple.com/documentation/carplay/using_the_carplay_simulator?language=objc) 中列举了一些在 CarPlay Simulator 上无法测试的功能。
+7. 最后，在真实环境（汽车中）测试。Apple 建议我们多测试弱网以及无网环境下的用户体验，因为驾驶过程中可能会经过网络不好的路段或区域。[使用 CarPlay Simulator 运行和调试 CarPlay App](https://developer.apple.com/documentation/carplay/using_the_carplay_simulator?language=objc) 中列举了一些在 CarPlay Simulator 上无法测试的功能。
 
 ## 相关资料
 
