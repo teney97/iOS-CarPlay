@@ -222,6 +222,14 @@ let listItem = CPListItem(text: audioName,
 
 ![image-20211123143752733](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211123143752733.png)
 
+使用 CPListItem 来展示音频，你还可以通过 isPlaying 属性来显示正在播放的标志：
+
+```swift
+var isPlaying: Bool
+```
+
+![image-20211125115803820](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211125115803820.png)
+
 对于专辑 item，还需要右边的导航箭头来和音频 item 做区分，指示用户点击可以打开音频列表页面，可以使用以下构造器初始化 CPListItem。
 
 ```swift
@@ -331,9 +339,52 @@ CPNowPlayingRepeatButton is a concrete subclass of CPNowPlayingButton. Use the b
 CarPlay uses MPRemoteCommandCenter to observe changes to the repeat mode and updates the button’s appearance accordingly.
 ```
 
+#### 使用 userInfo 存储数据
+
+CPListItem、CPListImageRowItem 都有个 [userInfo](https://developer.apple.com/documentation/carplay/cplistitem/2977574-userinfo?language=objc) 属性，它用来存储数据。`CPListItem -> userInfo` 关系就类似于 `UITableViewCell -> model`。
+
+```swift
+// Use this property to attach a value that provides additional context to the list item. For example, you can attach a model object and reference it in the list item’s handler when processing the selection.
+var userInfo: Any?
+```
+
+#### 通过 isEnabled 设置 item 的可交互性（iOS 15）
+
+CPListItem、CPListImageRowItem 都有个 [isEnabled](https://developer.apple.com/documentation/carplay/cplistitem/3751895-enabled?language=objc) 属性，它用来设置 item 的可交互性（默认值为 true）。isEnabled 设置为 false 的 item 将不可点击，也就是不会触发 `- listTemplate:didSelectListItem:completionHandler:` 方法。最佳实践是，将 “还没有播放记录”、“正在加载中” 这些本身就没有交互的 item 的 isEnabled 设置为 false，这样呈现的 UI 效果更好，而且你也不用在 `- listTemplate:didSelectListItem:completionHandler:`  对这些 item 做 guard 处理了。不过该 API 在 iOS 15 开始才支持 😭，但我们还有其它方式可以避免在 didSelectListItem 方法中做 guard 处理，那就是用 item 的 handle 属性。
+
+```swift
+// A Boolean value that indicates if the item is enabled.
+@available(iOS 15.0, *)
+var isEnabled: Bool
+```
+
+#### 使用 handle 响应 item 的点击事件
+
+CPListItem、CPListImageRowItem 都有个 [handle](https://developer.apple.com/documentation/carplay/cplistitem/3667716-handler?language=objc) 属性，用来响应 item 的点击事件。如果你给 item 设置了 handle，那么点击 item 将触发 handle 而不触发 didSelectListItem 方法。
+
+```swift
+// An optional action block, fired when the user selects this item in a list template.
+var handler: ((CPSelectableListItem, @escaping () -> Void) -> Void)?
+```
+
+我们可以利用 handle 把一些特殊 item 的点击事件剥离出来，而不是全部放到 `- listTemplate:didSelectListItem:completionHandler:` 处理，这样可以**提高代码可维护性**。对于上面说的 isEnabled 仅在 iOS 15 以上才支持的问题，我们也可以像下面这样处理，以避免在 didSelectListItem 方法中做 guard 处理。
+
+```swift
+let item = CPListItem(text: "正在加载中", detailText: nil)
+if #available(iOS 15.0, *) {
+    item.isEnabled = false
+} else {
+    item.handler = { (item, completionHandler) in
+        completionHandler()
+    }
+}
+```
+
+
+
 ### 页面跳转
 
-还记得在 CarPlay app 入口 [- templateApplicationScene:didConnectInterfaceController:](https://developer.apple.com/documentation/carplay/cptemplateapplicationscenedelegate/3578119-templateapplicationscene?language=objc) 中的 CPInterfaceController 吗，它作为我们 CarPlay app 的入口 controller，我们将一个 template 作为 rootTemplate 赋值给它。当我们要进行页面跳转时也是靠它，有点类似于 UINavigationController，它支持 push、pop、present、dismiss 等等操作（present、dismiss 操作仅 CPActionSheetTemplate、CPVoiceControlTemplate、CPAlertTemplate）。 
+还记得在 CarPlay app 入口 [- templateApplicationScene:didConnectInterfaceController:](https://developer.apple.com/documentation/carplay/cptemplateapplicationscenedelegate/3578119-templateapplicationscene?language=objc) 中的 CPInterfaceController 吗，它作为我们 CarPlay app 的入口 controller，我们将一个 template 作为 rootTemplate 赋值给它。当我们要进行页面跳转时也是靠它，有点类似于 UINavigationController，它支持 push、pop、present、dismiss 等等操作（present、dismiss 操作仅 CPActionSheetTemplate、CPVoiceControlTemplate、CPAlertTemplate）。
 
 ### 图片
 
@@ -442,6 +493,7 @@ extension CPListImageRowItem: CPAsyncImage {
 * CarPlay Simulator 的语言是跟随 iPhone Simulator 的，真机是否也如此我没有测试过。
 * CarPlay Framework 需要设置为弱引用 optional（Target > Build phases > Link Binary With Libraries），否则在 iOS 14 以下启动 App 会 crash。
 * CarPlay 断开连接时，建议暂停音乐。
+* CarPlay 断开连接时，可以通过 Memory Graph 检查下有无内存泄漏。
 * Template 页面最好至少显示一项内容，特别是你没有使用 CPTabBarTemplate 作为 rootTemplate 的情况，否则页面将一片空白。例如，在最近播放页面，当没有播放记录时，我填充了一个 CPListTemplate 并显示 “当前没有播放记录”。
 
 ## 常见问题解答
