@@ -38,7 +38,7 @@ CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用（iPa
    * 如果杀死了 iPhone app 进程，那么 CarPlay app 就会关闭（在 UIScene 中是断开场景的连接）；
    * 如果关闭 CarPlay app（在 UIScene 中是断开场景的连接），iPhone app 进程不会被杀死。（好像只有退出整个 CarPlay，才会关闭所有 CarPlay app，没办法关闭指定 CarPlay app）；
 
-   对于 iOS 14 以上来说，它们就是两个 UIScene，因此 CarPlay app 和 iPhone app 可以一个处于后台一个处于前台。而对于 iOS 13 及更低版本的 CarPlay app，它和 iPhone app 是高度绑定的，只能共处前台或后台，用户体验不好。例如你在使用 CarPlay 导航时，手机将无法进行别的操作，否则会打断导航进程。
+   对于使用 CarPlay framework 开发的 CarPlay app，它们就是两个 UIScene，因此 CarPlay app 和 iPhone app 可以一个处于后台一个处于前台。而对于 MediaPlayer framework 开发的 CarPlay app，它和 iPhone app 是高度绑定的，只能共处前台或后台，用户体验不好。例如你在使用 CarPlay 导航时，手机将无法进行别的操作，否则会打断导航进程。
 
 5. 笔者开发的是音频类 CarPlay app，对其它类型的 app 没做了解，不过大致的开发流程应该差不多。开发一个音频类 CarPlay app 就是从 CPTemplateApplicationSceneDelegate 入口开始来构建 UI，填充数据。CarPlay app 的用户界面相对来说比较固定，但使用 CarPlay framework，Apple 支持更多可定制化的 UI 了。当车机连接后，音频将通过汽车扬声器播放。无论你使用 CarPlay framework 还是 MediaPlayer framework 来构建的 CarPlay app，都是通过 MPNowPlayingInfoCenter 和 MPRemoteCommandCenter 来提供播放界面的音频信息以及响应播放控制事件。只不过在 CarPlay framework 中，一些 remote command 事件通过 button handler 来处理了，比如播放模式、播放速率等等。当然如果你的 app 是音频类的话，应该已经支持了这些功能，因为 iPhone 锁屏界面以及控制中心的音频播放信息和播放控制也是通过它们提供。因此，我们只需要针对 CarPlay 做下优化或者功能增强就行。
 
