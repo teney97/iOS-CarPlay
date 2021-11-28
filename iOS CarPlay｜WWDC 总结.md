@@ -461,4 +461,5 @@ func beginLoadingChildItems(at indexPath: IndexPath,
 
 ## WWDC20 - 使用 CarPlay 车载系统为你的 App 提速
 
-内参：https://xiaozhuanlan.com/topic/7620814593
+内参：[WWDC20 内参｜WWDC20 10635 - 使用 CarPlay 车载系统为你的 App 提速](<https://xiaozhuanlan.com/topic/7620814593>)
+

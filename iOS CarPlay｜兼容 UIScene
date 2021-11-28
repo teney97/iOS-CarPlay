@@ -6,7 +6,7 @@
 
 ### UIScene 是什么
 
-在 iOS 13 之前，在功能职责上，UIApplication 负责 App 状态，UIApplicationDelegat（AppDelegate）负责 App 事件和生命周期，包括进程和 UI 的。对于单窗口的 App 来说这没有问题，但是要想开发多窗口的 iPad App 或者 Mac Catalyst App 的话，这种功能职责的划分已经不支持了。
+在 iOS 13 之前，在功能职责上，UIApplication 负责 App 状态，UIApplicationDelegate（AppDelegate）负责 App 事件和生命周期，包括进程和 UI 的。对于单窗口的 App 来说这没有问题，但是要想开发多窗口的 iPad App 或者 Mac Catalyst App 的话，这种功能职责的划分已经不支持了。
 
 因此， Apple 于 iOS 13 引入用于构建多窗口应用的 UIScene，并对功能职责进行了拆分，将 UI 相关的状态、事件和生命周期交与 UIWindowScene 和 UIWindowSceneDelegate（SceneDelegate）负责，UISceneSession 负责持久化的 UI 状态。
 
@@ -252,7 +252,7 @@ class TTScenes: NSObject {
 
 #### 首次启动隐私弹窗适配
 
-如果你的首次启动隐私弹窗是通过在 AppDelegate 的 init 方法中 hook `application:didFinishLaunchingWithOptions:` 方法进行拦截的话，也需要 hook `scene:willConnectToSession:options:`，然后可以将隐私弹窗弹出的时机放在这里。`scene:willConnectToSession:options:` 调用时机将在 `application:didFinishLaunchingWithOptions:` return 之后。
+如果你的首次启动隐私弹窗是通过在 AppDelegate 的 init 方法中 hook `- application:didFinishLaunchingWithOptions:` 方法进行拦截的话，也需要 hook `- scene:willConnectToSession:options:`，然后可以将隐私弹窗弹出的时机放在这里。`- scene:willConnectToSession:options:` 调用时机将在 `- application:didFinishLaunchingWithOptions:` return 之后。
 
 #### 相关资料
 
