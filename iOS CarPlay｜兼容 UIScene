@@ -2,13 +2,15 @@
 
 在 iOS 14 及更高版本中使用 CarPlay framework 来开发 CarPlay app 必须使用 UIScene（UIScene 是 Apple 于 iOS 13 引入的，用于构建多窗口应用），因此你的工程必须从传统的 UIWindow 和 AppDelegate 向 SceneDelegate 过渡。如果你的工程已经兼容了 UIScene，那么就可以省去这步骤的工作；如果还未兼容的话，可以参考本章节中的步骤。
 
+![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/201ca825e81f427e88ed74560cb1f8ae~tplv-k3u1fbpfcp-watermark.image?)
+
 ### UIScene 是什么
 
 在 iOS 13 之前，在功能职责上，UIApplication 负责 App 状态，UIApplicationDelegat（AppDelegate）负责 App 事件和生命周期，包括进程和 UI 的。对于单窗口的 App 来说这没有问题，但是要想开发多窗口的 iPad App 或者 Mac Catalyst App 的话，这种功能职责的划分已经不支持了。
 
 因此， Apple 于 iOS 13 引入用于构建多窗口应用的 UIScene，并对功能职责进行了拆分，将 UI 相关的状态、事件和生命周期交与 UIWindowScene 和 UIWindowSceneDelegate（SceneDelegate）负责，UISceneSession 负责持久化的 UI 状态。
 
-![未命名.001](/Users/chenjunteng/Downloads/未命名/未命名.001.jpeg)
+![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b6ceb358854349a49eee654d4796940f~tplv-k3u1fbpfcp-watermark.image?)
 
 ### 兼容 UIScene 
 
@@ -25,7 +27,7 @@ Info.plist 中添加以下 key-value。一些参数说明：
   * Delegate Class Name：与哪个 Scene 代理类关联
   * StoryBoard name：这个 Scene 使用的哪个 storyBoard 如果有的话
 
-![image-20211109143559164](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211109143559164.png)
+![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/50a9bf67131049c297b58ef719e18f36~tplv-k3u1fbpfcp-watermark.image?)
 
 ```xml
 <key>UIApplicationSceneManifest</key>
@@ -57,13 +59,13 @@ Info.plist 中添加以下 key-value。一些参数说明：
 
 **Targets > General > Deployment Info > Supports multiple windows** 取消勾选。该选项选中状态会影响 Info.plist 中 Enable Multiple Windows 的值。
 
-![image-20211109150539574](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211109150539574.png)
+![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/98192ea75aa84ed6b0dda12f6dc95bd7~tplv-k3u1fbpfcp-watermark.image?)
 
 #### AppDelegate 改动
 
 由于类功能职责的变化，一些原本在 AppDelegate API 中的实现需要迁移到 SceneDelegate API 中。
 
-![未命名.002](/Users/chenjunteng/Downloads/未命名/未命名.002.jpeg)
+![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/840edc05115e4d0a948c7d713437ea40~tplv-k3u1fbpfcp-watermark.image?)
 
 ```objectivec
 @implementation AppDelegate
@@ -204,7 +206,7 @@ class TTScenes: NSObject {
 
 使用 UIScene 后，UI 层级结构发生了一些变化，原本的 UIScreen 和 UIWindow 层中加入了一层 UIWindowScene。
 
-![未命名.003](/Users/chenjunteng/Downloads/未命名/未命名.003.jpeg)
+![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/af3a8af87c2a4c3db1d36a68e5a80626~tplv-k3u1fbpfcp-watermark.image?)
 
 而 UIWindow 也新增了一个 windowScene 属性，以及 windowScene 构造器。一个 UIWindow 必须使用 windowScene 进行初始化或者设置 windowScene 属性才能显示在屏幕上。
 
@@ -251,8 +253,6 @@ class TTScenes: NSObject {
 #### 首次启动隐私弹窗适配
 
 如果你的首次启动隐私弹窗是通过在 AppDelegate 的 init 方法中 hook `application:didFinishLaunchingWithOptions:` 方法进行拦截的话，也需要 hook `scene:willConnectToSession:options:`，然后可以将隐私弹窗弹出的时机放在这里。`scene:willConnectToSession:options:` 调用时机将在 `application:didFinishLaunchingWithOptions:` return 之后。
-
-
 
 #### 相关资料
 
