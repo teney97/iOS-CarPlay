@@ -134,7 +134,7 @@ CarPlay 中的所有 App 均可使用的功能：
   * AVAudioSessionModeSpokenAudio
   * AVAudioSessionModeCategoryOptionInterruptSpokenAudioAndMixWithOthers
 
-对于在 CarPlay 上集成的 App，App icon 将会出现在 CarPlay 主屏幕上，在 CarPlay 中运行的 App 将会在 CarPlay 和 iPhone 屏幕上显示（iOS 13 及更早版本）。
+对于在 CarPlay 上集成的 App，App icon 将会出现在 CarPlay 主屏幕上，在 CarPlay 中运行的 App 将会在 CarPlay 和 iPhone 屏幕上显示（iOS 13 及更早版本，因为没有 UIScene，所以只能共处前台或后台）。
 
 * 音频 App，可以提供音乐、新闻、播客等内容，采用一致的设计来适合在车中使用
 * 使用 Siri 短信和语音通话 App 可以经过升级以支持 CarPlay
@@ -156,7 +156,7 @@ CarPlay 中的所有 App 均可使用的功能：
 你可以使用 Xcode 的 CarPlay Simulator 运行和调试 CarPlay App，但为了达到最好的真实的测试结果，建议还是连接真实的设备在车上调试。
 
 * 对于音频 App 的局限性：Simulator 在播放状态下有一些局限，不能反映真实的用户体验
-* 为了用 LLDB 全面调试你的 App，Xcode 现在支持无线调试，这样 iPhone 就可以连接汽车，同时调试你的 App。可以观看 [WWDC19 - 使用 Xcode 9 进行调试](https://developer.apple.com/wwdc17/404) 了解更多。
+* 为了用 LLDB 全面调试你的 App，Xcode 9 开始支持无线调试，这样就可以在 iPhone 连接汽车的同时调试你的 App。可以观看 [WWDC19 - 使用 Xcode 9 进行调试](https://developer.apple.com/wwdc17/404) 了解更多。
 
 **数据保护**
 
@@ -207,7 +207,7 @@ CarPlay 还会询问特定索引的子项目数量。在本例中，我们询问
 
 有些车辆可能会根据车辆是否在行驶而强制在屏幕上显示有限的内容。这可能会限制屏幕上可显示的行数，以及点击进某一个目录后可显示的内容。你的 App 可以利用 MPPlayableContentManager 来处理这些变化。
 
-查询所显示的内容是否会受到限制，实现以下代理方法，判断是否执行了内容限制，以及获取受到内容限制时 列表中显示的项目的最大数目 和 层次结构中的最大深度。
+查询所显示的内容是否会受到限制，实现以下代理方法，判断是否执行了内容限制，以及获取受到内容限制时 列表中显示的项目的最大数目和层次结构中的最大深度。
 
 ```swift
 extension YourAppContentManager : MPPlayableContentDelegate {
@@ -368,7 +368,7 @@ _ application: UIApplication, didFinishLaunchingWithOptions launchOptions:
 }
 ```
 
-**在 iOS12 中所做的性能改善和优化**
+**在 iOS 12 中所做的性能改善和优化**
 
 * Improved performance in `MPPlayableContent`
 * Faster startup sequence 
@@ -408,7 +408,7 @@ Account for these common scenarios
 
 使用 `beginLoadingChildItems()` 来初始化获取内容。
 
-有一个API 叫做 `beginLoadingChildItems` 用于发起获取内容，无论何时当你的任意一个索引路径在 CarPlay 车上显示该 API 都会被调用（可以类比 `tableview` 的 `cellForRow` 方法）。当用户在 `tableview` 间滚动，或选择不同 `tabs`时，会针对显示屏上的每个单一索引路径调用 `beginLoadingChildItems`。这样在用户实际选择内容之前，你的 App 就有机会开始加载。这样当用户在选择内容时，要么正在网络请求中，要么数据已经准备完毕。
+有一个 API 叫做 `beginLoadingChildItems` 用于发起获取内容，无论何时当你的任意一个索引路径在 CarPlay 车上显示该 API 都会被调用（可以类比 `tableview` 的 `cellForRow` 方法）。当用户在 `tableview` 间滚动，或选择不同 `tabs` 时，会针对显示屏上的每个单一索引路径调用 `beginLoadingChildItems`。这样在用户实际选择内容之前，你的 App 就有机会开始加载。这样当用户在选择内容时，要么正在网络请求中，要么数据已经准备完毕。
 
 ```swift
 func beginLoadingChildItems(at indexPath: IndexPath,
@@ -437,7 +437,7 @@ func beginLoadingChildItems(at indexPath: IndexPath,
 
 总结一下，CarPlay 音频 App 拥有自己最棒的特色，你可以直接使用 `MPPlayableContent` API 来为你的 CarPlay App 提高数据内容。你需要注意一些情况，比如 iPhone 锁屏、用户未登录时，你的 App 仍然需要在 CarPlay 中展示完美的功能性。
 
-在 iOS12 中，我们做了一些很棒的优化和性能改善，以使你的 App 在 CarPlay 中运行良好。你需要再次运行你的 App，并了解是否还有性能改善的空间，从而让你的 App 变得越来越好。
+在 iOS 12 中，Apple 做了一些很棒的优化和性能改善，以使你的 App 在 CarPlay 中运行良好。你需要再次运行你的 App，并了解是否还有性能改善的空间，从而让你的 App 变得越来越好。
 
 ## WWDC19 - CarPlay 车载系统改进
 
