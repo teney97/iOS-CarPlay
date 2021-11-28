@@ -401,7 +401,11 @@ var isPlaying: Bool
 
 还记得在 CarPlay App 入口 [- templateApplicationScene:didConnectInterfaceController:](https://developer.apple.com/documentation/carplay/cptemplateapplicationscenedelegate/3578119-templateapplicationscene?language=objc) 中的 [CPInterfaceController](https://developer.apple.com/documentation/carplay/cpinterfacecontroller/) 吗，它作为我们 CarPlay App 的入口 controller，我们将一个 template 作为 rootTemplate 赋值给它。当我们要进行页面跳转时也是靠它，有点类似于 UINavigationController，它支持 push、pop、present、dismiss 等等操作（present、dismiss 操作仅 CPActionSheetTemplate、CPVoiceControlTemplate、CPAlertTemplate）。对于音频 App，一般 push 操作就够用，子页面的左上角都自带返回按钮的。
 
+### 代码设计
 
+可参考：
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2f1c43bf92714e8e8dde65bd14dc3089~tplv-k3u1fbpfcp-watermark.image?)
 
 ### 图片
 
