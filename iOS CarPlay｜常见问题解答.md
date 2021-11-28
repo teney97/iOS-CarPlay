@@ -9,33 +9,35 @@
 
 ### Simulator
 
-**1. 为什么 Simulator 菜单栏 I/O > External Displays 中没有 CarPlay 选项？**
+**1. 为什么 Simulator 菜单栏 I/O > External Displays 中 CarPlay 选项是禁用状态？**
 
-你可能还未在开发者网站申请 CarPlay 权限并将配置文件导入到工程中。[申请 CarPlay 权限](https://developer.apple.com/documentation/carplay/requesting_the_carplay_entitlements?language=objc)
+你可能还未在开发者网站申请 CarPlay 权限并将配置文件导入到工程中。
 
-**2. 为什么打开 CarPlay Simulator 没有显示我的 app？**
+可以参考：[申请 CarPlay 权限](https://developer.apple.com/documentation/carplay/requesting_the_carplay_entitlements?language=objc)
 
-你可能是忘了添加权利文件。你需要将 Key `com.apple.developer.carplay-audio` 添加到 Entitlements.plist 中并设置 Value 为 `1`。
+**2. 为什么打开 CarPlay Simulator 没有显示我的 App？**
+
+你可能是忘了添加权利文件。你需要将 Key `com.apple.developer.carplay-audio` 添加到 Entitlements.plist 中并设置 Value 为 1。
 
 ```xml
 <key>com.apple.developer.carplay-audio</key>
 <true/>
 ```
 
-可以参考 [申请 CarPlay 权限](https://developer.apple.com/documentation/carplay/requesting_the_carplay_entitlements?language=objc)。
+可以参考 [申请 CarPlay 权限](https://developer.apple.com/documentation/carplay/requesting_the_carplay_entitlements?language=objc)
 
-**3. 为什么 M1 Mac 打开 CarPlay app 直接崩溃？** 
+**3. 为什么 M1 Mac 打开 CarPlay App 直接崩溃？** 
 
-如果你的 Xcode 以 Rosetta 模式运行，那将无法使用 CarPlay Simulator。将 Simulator 也以 Rosetta 运行，结果无效。这个问题暂时没有解决方案。https://issueexplorer.com/issue/mapbox/mapbox-navigation-ios/3355。
+如果你是 M1 Mac，那可能无法使用 CarPlay Simulator。如果你的 Xcode 以 Rosetta 模式运行，那么启动 CarPlay App 会直接 crash。将 Simulator 也以 Rosetta 运行并不能解决问题。这个问题暂时没有解决方案。https://issueexplorer.com/issue/mapbox/mapbox-navigation-ios/3355。
 
-**4. 从 “播放中” app 返回到音频源 app，页面显示异常**
+**4. 从 “播放中” App 返回到音频源 App，页面显示异常**
 
 感觉是 Apple 的 bug，模拟器和真机都可能出现。bug 出现的步骤是：
 
-1. 先不要启动你的 CarPlay app
-2. 在你的 iPhone app 中播放音频
-3. 打开 CarPlay 的 “播放中” app
-4. 通过 “播放中” app 返回到你的 CarPlay app
+1. 先不要启动你的 CarPlay App
+2. 在你的 iPhone App 中播放音频
+3. 打开 CarPlay 的 “播放中” App
+4. 通过 “播放中” app 返回到你的 CarPlay App
 
 可能会出现的问题：
 
@@ -54,16 +56,16 @@
 
 **1. rootTemplate 右上角的 “正在播放按钮” 什么时候出现？**
 
-当前 app 正在播放音频时出现，点击它 push 到 CPNowPlayingTemplate。
+当前 App 正在播放音频时出现，点击它将 push 到 CPNowPlayingTemplate。
 
 **2. CarPlay 主界面的 “播放中（Now Playing）” app 是什么？**
 
-* CPNowPlayingTemplate 是个单例类，所有 CarPlay app 的 “正在播放” 界面都是使用这个单例。
-* “播放中” app 将从 nowPlayingCenter 中取数据，也就是说该 app 将显示 iPhone 上正在播放的音频信息，并将音频源 app 的 appName 显示在右上角，即使该音频源 app 不支持 CarPlay。因此，即使你的 app 暂时不支持 CarPlay，你也可以通过适配好 MPNowPlayingInfoCenter 和 MPRemoteCommandCenter 来使你的 app 支持 CarPlay ”播放中“ app。
+* CPNowPlayingTemplate 是个单例类，所有 CarPlay App 的 “正在播放” 界面都是使用这个单例。
+* “播放中” App 将从 nowPlayingCenter 中取数据，也就是说该 App 将显示 iPhone 上正在播放的音频信息，并将音频源 App 的 appName 显示在右上角，即使该音频源 App 不支持 CarPlay。因此，即使你的 App 暂时不支持 CarPlay，你也可以通过适配好 MPNowPlayingInfoCenter 和 MPRemoteCommandCenter 来使你的 App 支持 CarPlay ”播放中“ App。
 
-![](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211115092835324.png)
+![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1127c309cdef4dcd90e9dfc1d1e5e144~tplv-k3u1fbpfcp-watermark.image?)
 
-* 如果 “播放中” app 的音频源 app 支持 CarPlay，那么启动 “播放中” app 就会触发音频源 app 的 CarPlay 场景连接，也就是启动音频源 CarPlay app。这就是为什么 Apple 让我们在 `- templateApplicationScene:didConnectInterfaceController:` 的时机就配置好 CPNowPlayingTemplate 的原因，而不应该在 push 到 CPNowPlayingTemplate 的时候去配置，因为 CPNowPlayingTemplate 并不一定通过主动 push 时触发，可能是通过 “播放中” app 或者 rootTemplate 右上角的 “正在播放按钮”。点击 “播放中” app 左上角的返回按钮，将返回到该音频源的 CarPlay app 的 rootTemplate。
+* 如果 “播放中” App 的音频源 App 支持 CarPlay，那么启动 “播放中” App 就会触发音频源 App 的 CarPlay 场景连接，也就是启动音频源 CarPlay App。这就是为什么 Apple 让我们在 `- templateApplicationScene:didConnectInterfaceController:` 的时机就配置好 CPNowPlayingTemplate 的原因，而不应该在 push 到 CPNowPlayingTemplate 的时候去配置，因为 CPNowPlayingTemplate 并不一定通过主动 push 时触发，可能是通过 “播放中” App 或者 rootTemplate 右上角的 “正在播放按钮”。点击 “播放中” App 左上角的返回按钮，将返回到该音频源的 CarPlay App 的 rootTemplate。
 
 **3. 正在播放页面中音频插图（封面）不显示**
 
