@@ -1,29 +1,25 @@
-## 兼容 SceneDelegate
+## 兼容 UIScene
 
-在 iOS 14 及更高版本中使用 CarPlay framework 来开发 CarPlay app 必须使用 UIScene（UIScene 是 Apple 于 iOS 13 引入的，用于构建多窗口应用），因此你的工程必须从传统的 UIWindow 和 UIApplicationDelegate API 向 UIScene 过渡。如果你的工程已经兼容了 UIScene，那么就可以省去这步骤的工作；如果还未兼容的话，也可以参考如下步骤。
+在 iOS 14 及更高版本中使用 CarPlay framework 来开发 CarPlay app 必须使用 UIScene（UIScene 是 Apple 于 iOS 13 引入的，用于构建多窗口应用），因此你的工程必须从传统的 UIWindow 和 AppDelegate 向 SceneDelegate 过渡。如果你的工程已经兼容了 UIScene，那么就可以省去这步骤的工作；如果还未兼容的话，可以参考本章节中的步骤。
 
-### SceneDelegate 是什么
+### UIScene 是什么
 
-在 iOS 13 之前，AppDelegate 的职责是管理 App 生命周期和 UI 生命周期。这种模式完全没问题，因为只有一个进程，只有一个与这个进程对应的用户界面。
+在 iOS 13 之前，在功能职责上，UIApplication 负责 App 状态，UIApplicationDelegat（AppDelegate）负责 App 事件和生命周期，包括进程和 UI 的。对于单窗口的 App 来说这没有问题，但是要想开发多窗口的 iPad App 或者 Mac Catalyst App 的话，这种功能职责的划分已经不支持了。
 
-![img](https://upload-images.jianshu.io/upload_images/738839-595e8a80104972f8.png?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp)
+因此， Apple 于 iOS 13 引入用于构建多窗口应用的 UIScene，并对功能职责进行了拆分，将 UI 相关的状态、事件和生命周期交与 UIWindowScene 和 UIWindowSceneDelegate（SceneDelegate）负责，UISceneSession 负责持久化的 UI 状态。
 
-但是要想开发多窗口的 iPad App 或者 Mac Catalyst App 的话，AppDelegate 已经不支持了。于是 Apple 于 iOS 13 引入 UIScene，用于构建多窗口应用。在 iOS 13 之后，如果你在工程中使用 SceneDelegate 的话，UI 生命周期将交由 SceneDelegate 管理，而 AppDelegate 则继续管理 App 生命周期以及新的 Scene Session 生命周期，职责单一化。
+![未命名.001](/Users/chenjunteng/Downloads/未命名/未命名.001.jpeg)
 
-![img](https://upload-images.jianshu.io/upload_images/738839-0d9367533f3ced83.png?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp)
-
-![img](https://upload-images.jianshu.io/upload_images/738839-495e5d5aedba2b0f.png?imageMogr2/auto-orient/strip|imageView2/2/w/666/format/webp)
-
-### 兼容 SceneDelegate
+### 兼容 UIScene 
 
 因为 UIScene 只能在 iOS 13 及更高版本中使用，因此如果你的 App 最低版本支持小于 iOS 13 的话，你就不能完全使用 SceneDelegate，在 iOS 13 及更高版本中使用 AppDelegate + SceneDelegate，而在低于 iOS 13 的版本中继续只使用 AppDelegate。
 
-#### Info.plist
+#### 在 Info.plist 声明一个 UIWindowScene
 
 Info.plist 中添加以下 key-value。一些参数说明：
 
-* Enable Multiple Windows，需要设置为 NO，否则你的 iPad App 将支持多窗口。
-* Application Session Role，一个数组，配置你的 app 场景，每一项有 4 个参数：
+* Enable Multiple Windows，需要设置为 NO，否则你的 iPad App 将支持多窗口（如果你的 iPhone 和 iPad 工程放在同一工程下的话）。
+* Application Session Role，一个数组，配置你的 App 场景，每一项有 4 个参数：
   * Class Name：Scene 类型
   * Configuration Name：当前配置的名字
   * Delegate Class Name：与哪个 Scene 代理类关联
@@ -59,18 +55,22 @@ Info.plist 中添加以下 key-value。一些参数说明：
 
 #### Project
 
-Targets > General > Deployment Info > Supports multiple windows 取消勾选。该选项选中状态会影响 Info.plist 中 Enable Multiple Windows 的值。
+**Targets > General > Deployment Info > Supports multiple windows** 取消勾选。该选项选中状态会影响 Info.plist 中 Enable Multiple Windows 的值。
 
 ![image-20211109150539574](/Users/chenjunteng/Library/Application Support/typora-user-images/image-20211109150539574.png)
 
 #### AppDelegate 改动
+
+由于类功能职责的变化，一些原本在 AppDelegate API 中的实现需要迁移到 SceneDelegate API 中。
+
+![未命名.002](/Users/chenjunteng/Downloads/未命名/未命名.002.jpeg)
 
 ```objectivec
 @implementation AppDelegate
 
 - (UIWindow *)window {
     if (@available(iOS 13, *)) {
-        return [(SceneDelegate *)HTScenes.mainScene.delegate window];
+        return [(SceneDelegate *)TTScenes.mainScene.delegate window];
     } else {
         return _window;
     }
@@ -79,9 +79,8 @@ Targets > General > Deployment Info > Supports multiple windows 取消勾选。�
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     ...
     if (@available(iOS 13.0, *)) {} else {
-        // create window
-        // do something after window created
-        // 需要注意原先在 window created 之后才执行的代码，也要兼容 iOS 13
+        // 1. create window
+        // 2. do something after window created。需要注意原先在 window created 之后才执行的代码，也要兼容 iOS 13
     }
     ...
     return YES;
@@ -90,7 +89,7 @@ Targets > General > Deployment Info > Supports multiple windows 取消勾选。�
 @end
 ```
 
-以下根据你的需求添加。
+以下方法选择性实现。
 
 ```swift
 @available(iOS 13, *)
@@ -133,12 +132,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene), session.configuration.name == configurationName else { return }
-        // create window
+        // 1. create window
         let window = UIWindow(windowScene: windowScene)
         // ...
         self.window = window
         window.makeKeyAndVisible()
-        // do something after window created
+        // 2. do something after window created
     }
   
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -156,8 +155,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneWillEnterForeground(_ scene: UIScene) {
-        // Called as the scene transitions from the background to the foreground.
-        // Use this method to undo the changes made on entering the background.
         guard scene.session.configuration.name == configurationName else { return }
         UIApplication.shared.delegate?.applicationWillEnterForeground?(UIApplication.shared)
     }
@@ -203,9 +200,24 @@ class TTScenes: NSObject {
 }
 ```
 
-#### UIView+SceneHook
+#### UIWindow+SceneHook
 
-使用 UIScene，一个 UIWindow 必须使用 windowScene 进行初始化或者设置 windowScene 属性才能显示。这里我们可以 hook UIView 的 initWithFrame: 方法：
+使用 UIScene 后，UI 层级结构发生了一些变化，原本的 UIScreen 和 UIWindow 层中加入了一层 UIWindowScene。
+
+![未命名.003](/Users/chenjunteng/Downloads/未命名/未命名.003.jpeg)
+
+而 UIWindow 也新增了一个 windowScene 属性，以及 windowScene 构造器。一个 UIWindow 必须使用 windowScene 进行初始化或者设置 windowScene 属性才能显示在屏幕上。
+
+```objectivec
+// instantiate a UIWindow already associated with a given UIWindowScene instance, with matching frame & interface orientations.
+- (instancetype)initWithWindowScene:(UIWindowScene *)windowScene API_AVAILABLE(ios(13.0));
+
+// If nil, window will not appear on any screen.
+// changing the UIWindowScene may be an expensive operation and should not be done in performance-sensitive code
+@property (nullable, nonatomic, weak) UIWindowScene *windowScene API_AVAILABLE(ios(13.0));
+```
+
+为了兼容旧代码，我们可以 hook UIView 的 initWithFrame: 方法，为 UIWindow 设置 windowScene。
 
 ```objectivec
 @implementation UIView (SceneHook)
@@ -213,7 +225,7 @@ class TTScenes: NSObject {
 + (void)load {
 
     if (@available(iOS 13.0, *)) {
-        
+      
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
             SEL selector = @selector(initWithFrame:);
@@ -239,3 +251,10 @@ class TTScenes: NSObject {
 #### 首次启动隐私弹窗适配
 
 如果你的首次启动隐私弹窗是通过在 AppDelegate 的 init 方法中 hook `application:didFinishLaunchingWithOptions:` 方法进行拦截的话，也需要 hook `scene:willConnectToSession:options:`，然后可以将隐私弹窗弹出的时机放在这里。`scene:willConnectToSession:options:` 调用时机将在 `application:didFinishLaunchingWithOptions:` return 之后。
+
+
+
+#### 相关资料
+
+* [WWDC19｜Introducing Multiple Windows on iPad](https://developer.apple.com/videos/play/wwdc2019/212)
+    * [WWDC19 内参｜iPad 上的多窗口](https://xiaozhuanlan.com/topic/0342159876)
