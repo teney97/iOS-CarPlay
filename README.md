@@ -5,7 +5,7 @@
 * [iOS CarPlay｜兼容 UIScene](https://github.com/teney97/iOS-CarPlay/blob/main/iOS%20CarPlay｜兼容%20UIScene)
 * [iOS CarPlay｜让你的音频 App 支持 CarPlay](https://github.com/teney97/iOS-CarPlay/blob/main/iOS%20CarPlay%EF%BD%9C%E8%AE%A9%E4%BD%A0%E7%9A%84%E9%9F%B3%E9%A2%91%20App%20%E6%94%AF%E6%8C%81%20CarPlay.md)
 * [iOS CarPlay｜常见问题解答](https://github.com/teney97/iOS-CarPlay/blob/main/iOS%20CarPlay%EF%BD%9C%E8%AE%A9%E4%BD%A0%E7%9A%84%E9%9F%B3%E9%A2%91%20App%20%E6%94%AF%E6%8C%81%20CarPlay.md)
-* [iOS CarPlay｜WWDC 总结](https://github.com/teney97/iOS-CarPlay/blob/main/iOS%20CarPlay%EF%BD%9CWWDC%20%E6%80%BB%E7%BB%93.md)
+* [iOS CarPlay｜WWDC 笔记](https://github.com/teney97/iOS-CarPlay/blob/main/iOS%20CarPlay%EF%BD%9CWWDC%20%E7%AC%94%E8%AE%B0.md)
 
 ## 前言
 
