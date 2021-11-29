@@ -450,7 +450,7 @@ extension CPAsyncImage {
             }
                    
             if let cgImage = image.cgImage {
-                let screen = TTScenes.carPlayScene?.value(forKey: "screen") as? UIScreen
+                let screen = TTScene.carPlay?.value(forKey: "screen") as? UIScreen
                 let scale = screen?.scale ?? 1
                 image = UIImage(cgImage: cgImage, scale: scale, orientation: .up)
             }
