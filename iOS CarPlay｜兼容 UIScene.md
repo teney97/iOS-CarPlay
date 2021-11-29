@@ -72,7 +72,7 @@ Info.plist 中添加以下 key-value。一些参数说明：
 
 - (UIWindow *)window {
     if (@available(iOS 13, *)) {
-        return [(SceneDelegate *)TTScenes.mainScene.delegate window];
+        return [(SceneDelegate *)TTScene.main.delegate window];
     } else {
         return _window;
     }
@@ -179,24 +179,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 }
 ```
 
-#### TTScenes: 用于获取场景
+#### TTScene: 用于获取场景
 
 ```swift
 import UIKit
 import CarPlay
 
 @available(iOS 13.0, *)
-class TTScenes: NSObject {
+class TTScene: NSObject {
 
     static var connectedScenes: Set<UIScene> {
         UIApplication.shared.connectedScenes
     }
     
-    @objc static var mainScene: UIWindowScene? {
+    @objc static var main: UIWindowScene? {
         connectedScenes.first(where: { $0 is UIWindowScene }) as! UIWindowScene?
     }
     
-    static var carPlayScene: CPTemplateApplicationScene? {
+    static var carPlay: CPTemplateApplicationScene? {
         connectedScenes.first(where: { $0 is CPTemplateApplicationScene }) as! CPTemplateApplicationScene?
     }
 }
@@ -239,7 +239,7 @@ class TTScenes: NSObject {
             class_replaceMethod(self, selector, imp_implementationWithBlock(^(UIView *self, CGRect frame) {
                 ((UIView * (*)(UIView *, SEL, CGRect))imp)(self, selector, frame);
                 if ([self isKindOfClass:UIWindow.class]) {
-                    [(UIWindow *)self setWindowScene:TTScenes.mainScene];
+                    [(UIWindow *)self setWindowScene:TTScene.main];
                 }
                 return self;
             }), method_getTypeEncoding(method));
