@@ -96,7 +96,7 @@ CPTemplateApplicationSceneDelegate 协议定义了 CarPlay 在场景连接、断
 
   通知代理 CarPlay Scene 已断开连接。当车机断开连接时，该方法将被调用，可以做一些清理工作。
 
-参考文档：[在你的 CarPlay app 中显示内容](https://developer.apple.com/documentation/carplay/displaying_content_in_carplay?language=objc)
+参考文档：[在你的 CarPlay App 中显示内容](https://developer.apple.com/documentation/carplay/displaying_content_in_carplay?language=objc)
 
 ### CarPlay 界面搭建
 
@@ -121,7 +121,7 @@ interfaceController.setRootTemplate(tabBarTemplate, animated: true)
 
 ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/90920a58c3264fb98908516fffb09449~tplv-k3u1fbpfcp-watermark.image?)
 
-需要注意一下，CPTabBarTemplate 的 templates 是有个数限制的，最大数量通过 [maximumTabCount](https://developer.apple.com/documentation/carplay/cptabbartemplate/3589351-maximumtabcount/) 类属性获取，它的值取决于在 Entitlements.plist 中添加的权利，音频 app 最多添加 4 个，超过数量会 crash。
+需要注意一下，CPTabBarTemplate 的 templates 是有个数限制的，最大数量通过 [maximumTabCount](https://developer.apple.com/documentation/carplay/cptabbartemplate/3589351-maximumtabcount/) 类属性获取，它的值取决于在 Entitlements.plist 中添加的权利，音频 App 最多添加 4 个，超过数量会 crash。
 
 > 在 [WWDC17 - 让你的 App 支持 CarPlay 车载](https://github.com/teney97/iOS-CarPlay/blob/main/Content/WWDC17%20-%20%E8%AE%A9%E6%82%A8%E7%9A%84%20App%20%E6%94%AF%E6%8C%81%20CarPlay%20%E8%BD%A6%E8%BD%BD.md) 中 Apple 提到过使用 MediaPlayer framework 来构建的 CarPlay App 时，推荐使用最多 4 个 tabs 并且使用较短的标题，因为空间有限并且有些汽车的屏幕比较窄，而且有音频正在播放的时候还需在 rootTemplate 右上角显示 “正在播放” 按钮。
 
@@ -256,7 +256,7 @@ enum CPListItemAccessoryType : Int {
 
 ![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/95c7eb8bdac4467396a7c9dce25a11a8~tplv-k3u1fbpfcp-watermark.image?)
 
-你可以根据自己的需求配置 CPNowPlayingTemplate，比如添加控制按钮。你可以使用 CarPlay framework 提供的一些系统按钮，也可以自定义按钮。需要注意的是，你要在 `- templateApplicationScene:didConnectInterfaceController:` 的时机就配置好 CPNowPlayingTemplate，而不应该在 push 到 CPNowPlayingTemplate 的时候才去配置，因为 CPNowPlayingTemplate 并不一定是通过主动 push 时触发，还可能是通过 “播放中” app 或者 rootTemplate 右上角的 “正在播放按钮”。
+你可以根据自己的需求配置 CPNowPlayingTemplate，比如添加控制按钮。你可以使用 CarPlay framework 提供的一些系统按钮，也可以自定义按钮。需要注意的是，你要在 `- templateApplicationScene:didConnectInterfaceController:` 的时机就配置好 CPNowPlayingTemplate，而不应该在 push 到 CPNowPlayingTemplate 的时候才去配置，因为 CPNowPlayingTemplate 并不一定是通过主动 push 时触发，还可能是通过 “播放中” App 或者 rootTemplate 右上角的 “正在播放按钮”。
 
 ```swift
 let nowPlayingTemplate = CPNowPlayingTemplate.shared
