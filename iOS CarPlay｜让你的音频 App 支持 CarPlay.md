@@ -389,7 +389,7 @@ if #available(iOS 15.0, *) {
 
 #### 通过 isPlaying 属性来显示正在播放的指示器
 
-使用 CPListItem 来展示音频，你还可以通过 [isPlaying](https://developer.apple.com/documentation/carplay/cplistitem/3551780-isplaying) 属性来显示正在播放的指示器：
+使用 CPListItem 来展示音频，你还可以通过 [isPlaying](https://developer.apple.com/documentation/carplay/cplistitem/3551780-isplaying) 属性来显示正在播放的指示器。
 
 ```swift
 var isPlaying: Bool
@@ -397,7 +397,7 @@ var isPlaying: Bool
 
 ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/33d26d619a764d15a0449063b6c531b4~tplv-k3u1fbpfcp-watermark.image?)
 
-指示器的位置默认在左边，隐藏了 image。你还可以通过 [playingIndicatorLocation](https://developer.apple.com/documentation/carplay/cplistitem/3566414-playingindicatorlocation?language=objc) 属性设置指示器位置为右边，
+指示器的位置默认在左边，隐藏了 image。你还可以通过 [playingIndicatorLocation](https://developer.apple.com/documentation/carplay/cplistitem/3566414-playingindicatorlocation?language=objc) 属性设置指示器位置为右边。
 
 ```swift
 enum CPListItemPlayingIndicatorLocation : Int {
