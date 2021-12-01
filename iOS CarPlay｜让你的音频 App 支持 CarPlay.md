@@ -186,7 +186,6 @@ protocol CPListTemplateDelegate : NSObjectProtocol {
 可以用来展示由一组专辑组成的模块。使用文本和一组图片初始化，文本可以展示模块名称，图片可以展示模块里前 n 个专辑的封面。
 
 ```swift
-// 遵循协议：CPListImageRowItem: CPSelectableListItem: CPListTemplateItem
 let imagesCount = CPMaximumNumberOfGridImages // 取决于汽车显示屏的可用宽度
 let images = Array(repeating: image, count: imagesCount)
 let listImageRowItem = CPListImageRowItem(text: text, images: images)
@@ -341,7 +340,7 @@ infoCenter.nowPlayingInfo = [MPMediaItemPropertyTitle: "Style",
   * changePlaybackRateCommand
   * ...
 * 使用 CarPlay framework 时，changeRepeatModeCommand、changePlaybackRateCommand 不再由 MPRemoteCommandCenter 触发，而是通过 [CPNowPlayingRepeatButton](https://developer.apple.com/documentation/carplay/cpnowplayingrepeatbutton/)、[CPNowPlayingPlaybackRateButton](https://developer.apple.com/documentation/carplay/cpnowplayingplaybackratebutton) 的 handler 处理，但 command.enabled 还是要开启。例如：
-  * 当 command.enabled 为 true 时，用户点击了播放模式按钮，CPNowPlayingRepeatButton 的 handler 就会被触发，然后你可以更新 App 播放模式，并将播放模式状态通过上述方式同步到 CarPlay。如果你的 App 还支持随机播放模式，可以自定义一个 CPNowPlayingButton，配合 CPNowPlayingRepeatButton 完成 3 种模式的切换。
+  * 当 command.enabled 为 true 时，用户点击了播放模式按钮，CPNowPlayingRepeatButton 的 handler 就会被触发，然后你可以更新 App 播放模式，并将播放模式状态通过上述方式同步到 CarPlay。如果你的 App 还支持随机播放模式，可以添加 CPNowPlayingShuffleButton 以及启用 changeShuffleModeCommand，配合 CPNowPlayingRepeatButton 完成 3 种模式的切换。
   * 由于只能得知用户点击了按钮，而不知道用户点击按钮的具体意图，因此 CPNowPlayingPlaybackRateButton handler 的最佳实践是，设定一个播放速度范围，当用户点击时，增加 App 播放速度，并通过更新 nowPlayingInfo 同步到 CarPlay。如果当前音频正在以最快的支持速度播放，那么继续增加播放速度就将其调到最小速度，以此循环。
 
 ### 最佳实践
