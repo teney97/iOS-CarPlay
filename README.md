@@ -58,6 +58,8 @@ CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用（iPa
    * 设置和更新 MPNowPlayingInfoCenter 的 playbackState，以更新 CarPlay App 上显示的音频播放状态：播放/暂停；
    * 设置和更新 MPRemoteCommandCenter 的 changeRepeatModeCommand.currentRepeatType，以更新 CarPlay App 上显示的播放模式状态：顺序循环/单曲循环
 
+   即使你的 App 暂时还不打算支持 CarPlay，你也可以通过适配好 MPNowPlayingInfoCenter 和 MPRemoteCommandCenter 来使你的 App 支持 CarPlay ”播放中“ App。
+
 6. 了解 CarPlay framework 都支持哪些功能、 UI，然后帮助你的 PM 和 UI 完成需求、原型和设计。学习 UI 的使用，界面基本就是由 Template 和 Item 组成，常用的有 CPTabBarTemplate、CPListTemplate、CPListItem、CPListImageRowItem 等等。
 
 6. 然后，就是开发啦！此处省略 ... 字。
