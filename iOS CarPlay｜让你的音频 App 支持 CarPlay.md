@@ -521,6 +521,10 @@ extension CPListImageRowItem: CPAsyncImage {
 
 在 WWDC 或相关文档中，Apple 多次提到要关注弱网以及无网环境下的用户体验，因为驾驶过程中可能会经过网络不好的路段或区域。例如上面提到的 ”请求超时，重新加载数据“ 问题、CPNowPlayingTemplate 中数据同步以及播放控制事件是否出现异常等等。
 
+### Siri
+
+即使你的 App 不支持 SiriKit，也还是可以支持通过 Siri 来切歌、暂停或恢复播放的，因为这些远程控制事件天然就支持 Siri。
+
 ### 埋点
 
 一些埋点可能需要通过投机取巧的方法。比如在哪个页面触发了返回按钮，可以通过 `- templateDidAppear`、`- templateWillDisappear` 等方法配合实现。emmm... 加了埋点后代码一点儿也不简洁了。
