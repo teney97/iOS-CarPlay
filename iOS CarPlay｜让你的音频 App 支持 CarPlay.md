@@ -407,6 +407,27 @@ enum CPListItemPlayingIndicatorLocation : Int {
 var playingIndicatorLocation: CPListItemPlayingIndicatorLocation
 ```
 
+#### 支持打开当前播放列表
+
+![](https://gitee.com/junteng/images/raw/master/img/20211222110753.jpg)
+
+一个好用的音频 App 的播放页应该支持打开当前播放列表，方便用户切歌，CarPlay App 也应支持。特别是，如果一个专辑是通过 iPhone App 进行播放的，而 CarPlay App 没有该专辑数据（CarPlay 和 iPhone App 的数据可能不同），那么用户想听该专辑的其它歌曲的话，就只能通过“上一首/下一首”或者“iPhone App 的播放列表”进行切歌。因此，在 CarPlay App 的播放页中支持打开当前播放列表是很棒的。
+
+CPNowPlayingTemplate 支持在右上角显示一个打开当前播放列表的按钮，点击后 push 一个 CPListTemplate，来展示当前的播放列表。
+
+```swift
+let nowPlayingTemplate = CPNowPlayingTemplate.shared
+nowPlayingTemplate.isUpNextButtonEnabled = true
+nowPlayingTemplate.upNextTitle = "播放列表"
+nowPlayingTemplate.add(observer)
+
+ObserverClass: CPNowPlayingTemplateObserver {
+    func nowPlayingTemplateUpNextButtonTapped(_ nowPlayingTemplate: CPNowPlayingTemplate) {
+        interfaceController.pushTemplate(aListTemplate, animated: true)
+    }
+}
+```
+
 ### 页面跳转
 
 还记得在 CarPlay App 入口 [- templateApplicationScene:didConnectInterfaceController:](https://developer.apple.com/documentation/carplay/cptemplateapplicationscenedelegate/3578119-templateapplicationscene?language=objc) 中的 [CPInterfaceController](https://developer.apple.com/documentation/carplay/cpinterfacecontroller/) 吗，它作为我们 CarPlay App 的入口 controller，我们将一个 template 作为 rootTemplate 赋值给它。当我们要进行页面跳转时也是靠它，有点类似于 UINavigationController，它支持 push、pop、present、dismiss 等等操作（present、dismiss 操作仅 CPActionSheetTemplate、CPVoiceControlTemplate、CPAlertTemplate）。对于音频 App，一般 push 操作就够用，子页面的左上角都自带返回按钮的。
