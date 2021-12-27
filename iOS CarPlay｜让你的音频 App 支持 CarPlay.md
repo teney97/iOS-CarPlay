@@ -171,15 +171,33 @@ public protocol CPTabBarTemplateDelegate : NSObjectProtocol {
 
 ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c284c0486f8947dd82d8334b1b6c10b0~tplv-k3u1fbpfcp-watermark.image?)
 
-CPListTemplate 有个遵循[CPListTemplateDelegate](https://developer.apple.com/documentation/carplay/cplisttemplatedelegate/) 协议的 delegate 属性，CPListTemplateDelegate 就一个方法，在用户点击 item 时触发，我们可以在该方法实现中 push 其它 Template。
+CPListTemplate 有个遵循 [CPListTemplateDelegate](https://developer.apple.com/documentation/carplay/cplisttemplatedelegate/) 协议的 delegate 属性，CPListTemplateDelegate 就一个方法，在用户点击 item 时触发，我们可以在该方法实现中 push 其它 Template。
 
 ```swift
+@available(iOS, introduced: 12.0, deprecated: 14.0)
 protocol CPListTemplateDelegate : NSObjectProtocol {
     func listTemplate(_ listTemplate: CPListTemplate, didSelect item: CPListItem, completionHandler: @escaping () -> Void)
 }
 ```
 
 注意这里有个 completionHandler 参数。当 `- listTemplate:didSelectListItem:completionHandler:` 方法被调用，在 completionHandler 调用之前，didSelectListItem 上会在右边显示一个 loading 活动指示器。最佳实践是，在要播放的内容已经准备好，或者页面跳转完成时（`- pushTemplate:animated:completion:` 的 completion 中）调用。当然，你也要保证 completionHandler 被调用，比如提前退出时，否则活动指示器会一直存在。
+
+> `CPListTemplateDelegate` 在 iOS 14 中已经被标记为弃用，建议使用 [CPSelectableListItem](https://developer.apple.com/documentation/carplay/cpselectablelistitem?language=objc) 协议的 `handler` 属性来处理 action，它是一个可选的 action block。CPListItem、CPListImageRowItem 等都遵循 `CPSelectableListItem` 协议。
+>
+> ```swift
+> /**
+>  @c CPListSelectable describes list items that accept a list item handler, called when
+>  the user selects this list item.
+>  */
+> @available(iOS 14.0, *)
+> public protocol CPSelectableListItem : CPListTemplateItem {
+>     /**
+>      An optional action block, fired when the user selects this item in a list template.
+>      You must call the completion block after processing the user's selection.
+>      */
+>     var handler: ((CPSelectableListItem, @escaping () -> Void) -> Void)? { get set }
+> }
+> ```
 
 #### CPListImageRowItem
 
@@ -195,18 +213,16 @@ let listImageRowItem = CPListImageRowItem(text: text, images: images)
 
 CPListImageRowItem 的点击区域可以分为每张图片区域、图片以外的所有区域。
 
-每张图片的点击回调通过设置 CPListImageRowItem 实例的 listImageRowHandler 属性来监听。点击可以 push 到该专辑的音频列表页面。
+每张图片的 action 通过设置 CPListImageRowItem 实例的 listImageRowHandler 属性来处理。点击可以 push 到该专辑的音频列表页面。
 
 ```swift
 var listImageRowHandler: ((CPListImageRowItem, Int, @escaping () -> Void) -> Void)? // The image row item that the user selected.
 ```
 
-图片以外的区域的点击回调走的是 CPListTemplateDelegate 的方法。点击可以 push 到该模块的专辑列表页面。
+图片以外的区域的 action 通过设置 CPListImageRowItem 实例的 handler 属性来处理。点击可以 push 到该模块的专辑列表页面。
 
 ```swift
-protocol CPListTemplateDelegate : NSObjectProtocol {
-    func listTemplate(_ listTemplate: CPListTemplate, didSelect item: CPListItem, completionHandler: @escaping () -> Void)
-}
+var handler: ((CPSelectableListItem, @escaping () -> Void) -> Void)?
 ```
 
 #### CPListItem
@@ -356,7 +372,7 @@ var userInfo: Any?
 
 #### 通过 isEnabled 设置 item 的可交互性（iOS 15）
 
-CPListItem、CPListImageRowItem 都有个 [isEnabled](https://developer.apple.com/documentation/carplay/cplistitem/3751895-enabled?language=objc) 属性，它用来设置 item 的可交互性（默认值为 true）。isEnabled 设置为 false 的 item 将灰显且不可点击，也就是不会触发 CPListTemplateDelegate 的 `- listTemplate:didSelectListItem:completionHandler:` 方法。最佳实践是，将 “还没有播放记录”、“正在加载中” 这些本身就没有交互的 item 的 isEnabled 设置为 false，这样呈现的 UI 效果更好，而且你也不用在 CPListTemplateDelegate 的方法中对这些 item 做 guard 处理了。不过该 API 在 iOS 15 开始才支持 😭 ，但我们还有其它方式可以避免在 CPListTemplateDelegate 的方法中做 guard 处理，那就是用 item 的 handler 属性。
+CPListItem、CPListImageRowItem 都有个 [isEnabled](https://developer.apple.com/documentation/carplay/cplistitem/3751895-enabled?language=objc) 属性，它用来设置 item 的可交互性（默认值为 true）。isEnabled 设置为 false 的 item 将灰显且不可点击，也就是不会触发 item 的 `handler` 或者 CPListTemplateDelegate 的 `- listTemplate:didSelectListItem:completionHandler:` 方法。最佳实践是，将 “还没有播放记录”、“正在加载中” 这些本身就没有交互的 item 的 isEnabled 设置为 false，这样呈现的 UI 效果更好，不过该 API 在 iOS 15 开始才支持。
 
 ```swift
 // A Boolean value that indicates if the item is enabled.
@@ -366,14 +382,24 @@ var isEnabled: Bool
 
 #### 使用 handle 响应 item 的点击事件
 
-CPListItem、CPListImageRowItem 都有个 [handler](https://developer.apple.com/documentation/carplay/cplistitem/3667716-handler?language=objc) 属性，用来响应 item 的点击事件。如果你给 item 设置了 handler，那么点击 item 将触发 handler 而不触发 CPListTemplateDelegate 的方法。
+CPListItem、CPListImageRowItem 都遵循 `CPSelectableListItem` 协议，有个 [handler](https://developer.apple.com/documentation/carplay/cplistitem/3667716-handler?language=objc) 属性，用来响应 item 的点击事件。如果你给 item 设置了 handler，那么点击 item 将触发 handler 而不触发 CPListTemplateDelegate 的方法。CPListTemplateDelegate 在 iOS 14 中已经被标记为弃用，建议使用 handler 来处理 action。
 
 ```swift
-// An optional action block, fired when the user selects this item in a list template.
-var handler: ((CPSelectableListItem, @escaping () -> Void) -> Void)?
+/**
+ @c CPListSelectable describes list items that accept a list item handler, called when
+ the user selects this list item.
+ */
+@available(iOS 14.0, *)
+public protocol CPSelectableListItem : CPListTemplateItem {
+    /**
+     An optional action block, fired when the user selects this item in a list template.
+     You must call the completion block after processing the user's selection.
+     */
+    var handler: ((CPSelectableListItem, @escaping () -> Void) -> Void)? { get set }
+}
 ```
 
-我们可以利用 handler 把一些特殊 item 的点击事件剥离出来，而不是全部放到 CPListTemplateDelegate 的 `- listTemplate:didSelectListItem:completionHandler:` 中处理，这样可以**提高代码可维护性**。对于上面说的 isEnabled 仅在 iOS 15 以上才支持的问题，我们也可以像下面这样处理，以避免在 CPListTemplateDelegate 的方法中做 guard 处理。
+handler 对比 CPListTemplateDelegate 处理 action 有个优点，handler 是针对 item 的，而 CPListTemplateDelegate 针对 CPListTemplate 里的所有 item。如果使用 CPListTemplateDelegate 的话我们就需要针对 “还没有播放记录”、“正在加载中” 等 item 做 guard 处理，而使用 handler 就可以单独处理或者不处理这些 item 的 action 了。
 
 ```swift
 let item = CPListItem(text: "正在加载中", detailText: nil)
@@ -545,10 +571,6 @@ extension CPListImageRowItem: CPAsyncImage {
 ### Siri
 
 即使你的 App 不支持 SiriKit，也还是可以支持通过 Siri 来切歌、暂停或恢复播放的，因为这些远程控制事件天然就支持 Siri。
-
-### 埋点
-
-一些埋点可能需要通过投机取巧的方法。比如在哪个页面触发了返回按钮，可以通过 `- templateDidAppear`、`- templateWillDisappear` 等方法配合实现。emmm... 加了埋点后代码一点儿也不简洁了。
 
 ### 测试
 
