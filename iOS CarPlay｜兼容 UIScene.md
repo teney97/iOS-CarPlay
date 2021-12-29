@@ -258,3 +258,4 @@ class TTScene: NSObject {
 
 * [WWDC19｜Introducing Multiple Windows on iPad](https://developer.apple.com/videos/play/wwdc2019/212)
     * [WWDC19 内参｜iPad 上的多窗口](https://xiaozhuanlan.com/topic/0342159876)
+* [Apple｜Specifying the Scenes Your App Supports](https://developer.apple.com/documentation/uikit/app_and_environment/scenes/specifying_the_scenes_your_app_supports?language=objc)
