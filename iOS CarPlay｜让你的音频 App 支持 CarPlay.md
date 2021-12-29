@@ -16,7 +16,7 @@
 
 每个 iPhone Simulator 都附带一个 CarPlay Simulator，在 **I/O > External Displays > CarPlay** 打开。默认的标准的 CarPlay Simulator 窗口大小和比例为 `800 x 480, @2x`。
 
-如果是导航类 App，Apple 建议开启 CarPlay Simulator 的附加选项，在终端输入以下命令。这允许你每次启动 CarPlay Simulator 前都可以设置窗口大小和比例，用来测试确保你的地图内容适配了所有推荐的配置。也许只支持导航类 App 吧，音频类 App 改变窗口大小后显示效果不尽如人意，建议关闭。
+如果是导航类 App，Apple 建议开启 CarPlay Simulator 的附加选项，在终端输入以下命令。这允许你每次启动 CarPlay Simulator 前都可以设置窗口大小和比例，用来测试确保你的地图内容适配了所有推荐的配置。这仅支持导航类 App ，音频类 App 改变窗口大小后显示效果不尽如人意，不建议开启。
 
 ```
 defaults write com.apple.iphonesimulator CarPlayExtraOptions -bool YES
