@@ -102,4 +102,3 @@ CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用（iPa
 ### 其它
 
 * [苹果 iOS 13 CarPlay 详解：全新 UI 设计 + 独立 App 视图 ](https://www.sohu.com/a/336034138_120178230)
-* [高德地图 CarPlay 适配指南](https://lbs.amap.com/api/ios-navi-sdk/guide/tools/carplay_navi)
