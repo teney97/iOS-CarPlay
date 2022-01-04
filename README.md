@@ -62,7 +62,7 @@ CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用（iPa
 
 6. 了解 CarPlay framework 都支持哪些功能、 UI，然后帮助你的 PM 和 UI 完成需求、原型和设计。学习 UI 的使用，界面基本就是由 Template 和 Item 组成，常用的有 CPTabBarTemplate、CPListTemplate、CPListItem、CPListImageRowItem 等等。
 
-6. 然后，就是开发啦！此处省略 ... 字。
+7. 然后，就是开发啦！此处省略 ... 字。
 
 8. 最后，在真实环境（汽车中）测试。[Apple｜使用 CarPlay Simulator 运行和调试 CarPlay App](https://developer.Apple.com/documentation/carplay/using_the_carplay_simulator?language=objc) 中列举了一些在 CarPlay Simulator 上无法测试的功能。另外，Apple 建议我们多测试弱网以及无网环境下的用户体验，因为驾驶过程中可能会经过网络不好的路段或区域。
 
@@ -78,7 +78,6 @@ CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用（iPa
 * [WWDC17｜让您的 App 支持 CarPlay 车载](https://developer.Apple.com/wwdc17/719)
 * [WWDC18｜CarPlay 车载音频和导航 App](https://developer.Apple.com/wwdc18/213)
   * [WWDC 2018：车载（CarPlay）在音频和导航 APP 中的应用](https://juejin.cn/post/6844903619192422413)
-
 * [WWDC19｜CarPlay 车载系统改进](https://developer.Apple.com/wwdc19/252)
 * [WWDC20｜使用 CarPlay 车载系统为你的 App 提速](https://developer.Apple.com/wwdc20/10635)
   * [WWDC20 内参｜WWDC20 10635 - 使用 CarPlay 车载系统为你的 App 提速](<https://xiaozhuanlan.com/topic/7620814593>)
