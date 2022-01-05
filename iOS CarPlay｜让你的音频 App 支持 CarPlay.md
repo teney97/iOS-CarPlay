@@ -280,7 +280,7 @@ let playbackRateButton = CPNowPlayingPlaybackRateButton() { ... }
 nowPlayingTemplate.updateNowPlayingButtons([repeatButton, playbackRateButton])
 ```
 
-无论你是使用 CarPlay framework 还是 MediaPlayer framework 来构建的 CarPlay App，都是通过 [MPNowPlayingInfoCenter](https://developer.apple.com/documentation/mediaplayer/mpnowplayinginfocenter/) 和 [MPRemoteCommandCenter](https://developer.apple.com/documentation/mediaplayer/mpremotecommandcenter/) 来提供播放界面的音频信息以及响应远程播放控制事件。只不过在 CarPlay framework 中，一些远程控制事件通过 [CPNowPlayingButton](https://developer.apple.com/documentation/carplay/cpnowplayingbutton/) 的 handler 来处理了，比如播放重复模式、播放速率等等。当然如果你的 App 是音频类的话，应该已经支持了这些功能，因为 iPhone 锁屏界面以及控制中心的音频播放信息和播放控制也是通过它们提供。因此，我们只需要针对 CarPlay 做下优化或者功能增强就行。我们具体要做的是：
+无论你是使用 CarPlay framework 还是 MediaPlayer framework 来构建的 CarPlay App，都是通过 [MPNowPlayingInfoCenter](https://developer.apple.com/documentation/mediaplayer/mpnowplayinginfocenter/) 和 [MPRemoteCommandCenter](https://developer.apple.com/documentation/mediaplayer/mpremotecommandcenter/) 来提供播放界面的音频信息以及响应远程播放控制事件。只不过在 CarPlay framework 中，一些远程控制事件通过 [CPNowPlayingButton](https://developer.apple.com/documentation/carplay/cpnowplayingbutton/) 的 handler 来处理了，比如播放重复模式、播放速度等等。当然如果你的 App 是音频类的话，应该已经支持了这些功能，因为 iPhone 锁屏界面以及控制中心的音频播放信息和播放控制也是通过它们提供。因此，我们只需要针对 CarPlay 做下优化或者功能增强就行。我们具体要做的是：
 
 * 设置和更新 MPNowPlayingInfoCenter 的 [nowPlayingInfo](https://developer.apple.com/documentation/mediaplayer/mpnowplayinginfocenter/1615903-nowplayinginfo)，它包含当前播放音频的元数据，如标题、作者、时长等等。时机：
 
