@@ -179,7 +179,7 @@ changePlaybackRateCommand.supportedPlaybackRates = [0.5, 1.0, 1.5, 2.0]
 
 **Best Practices**
 
-* 在调用 `MPPlayableContentDataSource` 和 `MPPlayableContentDelegate` 中的 completion handlers 之前，确保将要播放的内容实际上已经准备好播放或显示，在此期间显示加活动指示器。
+* **在调用 `MPPlayableContentDataSource` 和 `MPPlayableContentDelegate` 中的 completion handlers 之前，确保将要播放的内容实际上已经准备好播放或显示，在此期间显示加活动指示器。**(否则会进入再退出播放页面)
 * 对于那些不用 `Tabs` 而只用 `TableView` 的 App，`TableView` 必须返回至少一项内容。
 * CarPlay 会显示一个加载活动指示器，如果 App 在一定时限内没有返回内容就会超时。如果你的 App 需要一些初始的设置，比如登录凭据，在页面的第一行应该提示用户 App 当前的状态，通过填充一个 `MPContentItem`，MPContentItem is neither playable nor a container indicating the state of the app to the user。
 
@@ -352,6 +352,7 @@ protocol MPPlayableContentDelegate : NSObjectProtocol {
     
     /// 当媒体播放器界面希望播放请求的 content item 时，将调用此方法
     /// 如果 item 开始播放时出现错误，App 应该调用 completionHandler 并传入 error
+    /// [注] 点击 isPlayable 为 true 的 MPContentItem 会调用此方法
     @available(iOS, introduced: 7.1, deprecated: 14.0, message: "Use CarPlay framework")
     optional func playableContentManager(_ contentManager: MPPlayableContentManager, initiatePlaybackOfContentItemAt indexPath: IndexPath, completionHandler: @escaping (Error?) -> Void)
     
@@ -407,7 +408,77 @@ class MPContentItem : NSObject {
 }
 ```
 
+### 播放页
 
+无论你是使用 CarPlay framework 还是 MediaPlayer framework 来构建的 CarPlay App，都是通过 [MPNowPlayingInfoCenter](https://developer.apple.com/documentation/mediaplayer/mpnowplayinginfocenter/) 和 [MPRemoteCommandCenter](https://developer.apple.com/documentation/mediaplayer/mpremotecommandcenter/) 来提供播放界面的音频信息以及响应远程播放控制事件。不同之处在于，使用 CarPlay framework 时，播放重复模式（changeRepeatModeCommand）、播放速度（changePlaybackRateCommand）等远程控制命令不再通过 target-action 处理，而是通过 CPNowPlayingRepeatButton、CPNowPlayingPlaybackRateButton 的 handler 处理；而使用 MediaPlayer framework，这些 command 通过 target-action 来处理。
+
+#### 调整播放速度的坑
+
+播放页支持显示和调整播放速度是 iOS 11 的新功能。
+
+要支持该功能，使用 CarPlay framework 你需要做几件事情：
+
+1. 添加 MPNowPlayingInfoPropertyPlaybackRate、MPNowPlayingInfoPropertyDefaultPlaybackRate 到 MPNowPlayingInfoCenter 中
+2. 设置 changePlaybackRateCommand.enabled 为 true
+3. 实例化一个 CPNowPlayingRepeatButton，并通过 updateNowPlayingButtons 更新到 nowPlayingTemplate
+4. 在 CPNowPlayingRepeatButton 的 handler 中，更新 App 的音频播放速度，并更新 nowPlayingInfo（更新  MPNowPlayingInfoPropertyPlaybackRate、MPNowPlayingInfoPropertyDefaultPlaybackRate 的值）
+
+```swift
+// 1.
+let infoCenter = MPNowPlayingInfoCenter.default()
+infoCenter.nowPlayingInfo = [MPNowPlayingInfoPropertyDefaultPlaybackRate: 1,
+                             MPNowPlayingInfoPropertyPlaybackRate: 1,
+                            … ]
+// 2.
+let remoteCommandCenter = MPRemoteCommandCenter.shared()
+remoteCommandCenter.changePlaybackRateCommand.enabled = true
+// 3.
+let playbackRateButton = CPNowPlayingPlaybackRateButton() { 
+    // 4. 更新 App 的音频播放速度，并更新 nowPlayingInfo
+    ... 
+}
+nowPlayingTemplate.updateNowPlayingButtons([playbackRateButton, ...])
+```
+
+而使用 MediaPlayer framework 你需要做的事情是不同的：
+
+1. 添加 MPNowPlayingInfoPropertyPlaybackRate、MPNowPlayingInfoPropertyDefaultPlaybackRate 到 MPNowPlayingInfoCenter 中
+2. 设置 changePlaybackRateCommand.enabled 为 true
+3. 为 changePlaybackRateCommand.enabled 添加 target-action
+4. 设置 changePlaybackRateCommand.supportedPlaybackRates，值为所支持的播放速度数组
+5. 响应 action，更新 App 的音频播放速度，并更新 nowPlayingInfo（更新  MPNowPlayingInfoPropertyPlaybackRate、MPNowPlayingInfoPropertyDefaultPlaybackRate 的值）
+
+```swift
+// 1.
+let infoCenter = MPNowPlayingInfoCenter.default()
+infoCenter.nowPlayingInfo = [MPNowPlayingInfoPropertyDefaultPlaybackRate: 1,
+                             MPNowPlayingInfoPropertyPlaybackRate: 1,
+                            … ]
+// 2.
+MPRemoteCommandCenter *commandCenter = [MPRemoteCommandCenter sharedCommandCenter];
+commandCenter.changePlaybackRateCommand.enabled = YES;
+// 3.
+[commandCenter.changePlaybackRateCommand addTarget:self action:@selector(changePlaybackRate)];
+// 4.
+commandCenter.changePlaybackRateCommand.supportedPlaybackRates = @[@0.5, @1.0, @1.5, @2.0];
+// 5.
+- (MPRemoteCommandHandlerStatus)changePlaybackRate {
+    // 更新 App 的音频播放速度，并更新 nowPlayingInfo
+    ...
+    return MPRemoteCommandHandlerStatusSuccess;
+}
+```
+
+对于在 CarPlay 中调整播放速度的最佳实践是，例如，当前播放速度是 1.0，支持的播放速度选项有 `[0.5, 1.0, 1.5, 2.0]`。当用户点击播放速度按钮时，增加 App 播放速度，并通过更新 nowPlayingInfo 同步到 CarPlay。如果当前音频正在以最快的支持速度播放，那么继续增加播放速度就将其调到最小速度，以此循环。在这个例子中，如果用户连续三次调快播放速度，其变化为 1.0 -> 1.5 -> 2.0 -> 0.5。
+
+在使用 MediaPlayer framework 支持播放速度时，我遇到了一个问题：我们 App 的 音频所支持的播放速度选项有 `[0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5]`。在 CarPlay 播放页中点击播放速度按钮，播放速度成功更改了一次（1.0 -> 1.1），而接下来无论怎么点击都没有效果，action 都没有被调用；而在 iPhone App 中更改播放速度，是可以正常同步到 CarPlay App 中的。令我困惑的是，在《WWDC17 - 让你的 App 支持 CarPlay 车载》中 Apple 工程师对于 CarPlay App 支持调整播放速度并没有其他额外的步骤。通过查看 Apple 的文档以及谷歌，我也没有找到该问题的原因和解决方案。
+
+最后，我将 supportedPlaybackRates 的值改为《WWDC17 - 让你的 App 支持 CarPlay 车载》中 Apple 工程师演示的示例值 `[0.5, 1.0, 1.5, 2.0]`，并将我们 App 所支持的播放速度也改为此，发现该功能能正常使用了。我似乎发现了点蛛丝马迹，将所支持的播放速度改为 `[0.5, 0.6, 1.0, 1.5, 2.0]`，结果验证了我的猜想是对的。通过点击 CarPlay 播放页中的播放速度按钮，播放速度成功更改 1.0 -> 1.5 -> 2.0 -> 0.5，目前为止都没有问题，但当我再次点击按钮时，action 就没有被调用了。然后我通过 iPhone App 将播放速度调至为 1.0、1.5、2.0 的任意一值并更新 nowPlayingInfo，CarPlay App 上的播放速度按钮功能又正常了，直到调整到 0.5 时继续失效。
+
+因此，我得出的结论为在 MediaPlayer framework 下，CarPlay App 所支持的播放速度需为 0.5 的倍数，否则会导致功能异常，但目前我并没有在 Apple 的文档中找到依据。为了兼容 iPhone App 所支持的一些列播放速度值 `[0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5]`，并让 CarPlay App 支持调整播放速度功能  `[0.5, 1.0, 1.5]`，我的解决方案是：
+
+* 若用户通过 CarPlay App 调整播放速度，则播放速度在 `[0.5, 1.0, 1.5]` 三个值之间进行切换
+* 若用户通过 iPhone App 调整播放速度，如果设置的播放速度值包含于 `[0.5, 1.0, 1.5]`，那就在 CarPlay App 中显示播放速度按钮；否则隐藏播放速度按钮
 
 
 
@@ -415,3 +486,6 @@ class MPContentItem : NSObject {
 
 如何在CarPlay for Audio App中添加标签？https://www.xknote.com/ask/60d536b9ec7f1.html
 
+## 问题
+
+* 如果点击 item 进行播放，而这时候实际上还未开始播放的话，会 push 进播放页又紧接着自动 pop。应该是要等到音频开始播放了再调用 completionHandler
