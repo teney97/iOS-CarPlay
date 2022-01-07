@@ -584,7 +584,7 @@ extension CPListImageRowItem: CPAsyncImage {
 
 * 单例问题。CarPlay 用到了单例类，CarPlay App 关闭，但 iPhone App 没关闭，进程是还在的，单例还未释放，可能会造成一些问题。可以在 `- templateApplicationScene:didConnectInterfaceController:` 中初始化单例，在 `- templateApplicationScene:didDisconnectInterfaceController:` 中释放单例。
 * CarPlay 的语言是跟随 iPhone 的，Simulator 也是如此。
-* CarPlay framework 需要设置为弱引用 optional（Target > Build phases > Link Binary With Libraries），否则在 iOS 12 以下启动 App 会 crash。
+* CarPlay framework 需要设置为弱链接 optional（Target > Build phases > Link Binary With Libraries），否则在 iOS 12 以下启动 App 会 crash。
 * CarPlay 断开连接时，建议暂停音乐。
 * CarPlay 断开连接时，可以通过 Memory Graph 检查下有无内存泄漏。
 * Template 页面最好至少显示一项内容，特别是你没有使用 CPTabBarTemplate 作为 rootTemplate 的情况，否则页面将一片空白，影响用户体验。例如，在最近播放页面，当没有播放记录时，填充一个 CPListItem 并显示 “当前没有播放记录”。
