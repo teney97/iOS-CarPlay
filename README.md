@@ -18,7 +18,7 @@
 
 ## CarPlay 是什么
 
-CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用（iPad 不支持）。其前身是叫 iOS in the Car，2014 年更名为 CarPlay。
+CarPlay 是 Apple 发布的一个车载系统，可以配合 iPhone 使用（iPad 不支持）。其前身是叫 iOS in the Car，2014 年更名为 CarPlay。CarPlay 是当你驾驶时使用 iPhone 的更智能、更安全的方式。
 
 简单地说，如果你的汽车支持 CarPlay，那么当你的汽车（通过数据线、蓝牙、Wi-Fi）连接 iPhone 时，汽车显示屏会自动切换到 CarPlay，iPhone 上所有支持 CarPlay 的 App 会自动显示在 CarPlay 中，你可以在 iPhone 设置（通用 > CarPlay 车载）中屏蔽指定 App 或调整顺序。Apple 对 CarPlay App 用户界面采用一致的设计，内容由 App 自己提供。
 
