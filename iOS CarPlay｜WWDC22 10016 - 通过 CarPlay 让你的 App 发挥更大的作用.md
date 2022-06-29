@@ -6,7 +6,7 @@
 
 * 介绍 iOS16 中新增的两种支持 CarPlay 的 App 类型：Fueling App 和 Driving Task App
 * 探索 Navigation App 如何在受支持车辆中的数字仪表盘上实时绘制地图
-* 🌟 CarPlay Simulator：全新的 CarPlay App 开发与测试工具。它可以帮助你在不离开办公桌的情况下连接 iPhone Device 来开发和测试 CarPlay App，模拟真实环境，而无需经常来回跑到你的车上或购买售后主机进行测试
+* 🌟 CarPlay Simulator：全新的 CarPlay App 开发与测试工具。它可以帮助你在不离开办公桌的情况下连接 iPhone Device 来开发和测试 CarPlay App，模拟真实环境，而无需经常来回跑到你的车上或购买售后市场主机进行测试
 * 简单演示使用 CarPlay Simulator 对 CarPlay App 进行测试
 
 ![20220628141134.jpg](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/132d77361244433190a20070c9201ca0~tplv-k3u1fbpfcp-watermark.image?)
@@ -215,7 +215,7 @@ extension TemplateApplicationSceneDelegate: CPTemplateApplicationInstrumentClust
 在这之前，你有 2 种方式来测试 CarPlay App：
 
 1. Xcode iPhone Simulator 内置有 CarPlay Window，可以很方便地快速测试你的 CarPlay App
-2. 通过将你的 iPhone Device 连接到支持 CarPlay 的汽车或售后主机上来测试 CarPlay App，这是之前在你的 iPhone Device 上测试 CarPlay App 的唯一方式
+2. 通过将你的 iPhone Device 连接到支持 CarPlay 的汽车或售后市场主机上来测试 CarPlay App，这是之前在你的 iPhone Device 上测试 CarPlay App 的唯一方式
 
 今年，Apple 给我们带来了 CarPlay Simulator，它是一个 Mac App，可模拟汽车中的 CarPlay 的完整环境。你可以在 Apple 开发者网站上下载 [Xcode 附加工具包 - Additional Tools for Xcode 14 beta](https://developer.apple.com/download/all/)。
 
@@ -236,7 +236,7 @@ extension TemplateApplicationSceneDelegate: CPTemplateApplicationInstrumentClust
 使用 CarPlay Simulator 有几个好处：
 
 * 当你使用 CarPlay Simulator 时，你的 iPhone device 已经连接到你的 Mac，你可以同时使用 Mac 上的其它开发工具，例如在 Xcode 中调试或在 Instruments 中测试性能。
-* 在现有的 iPhone Simulator 内置的 CarPlay Window 上无法测试某些场景。例如，你需要测试你的 Navigation App 的语音指令是否与汽车的原生音频源（如 FM radio）正确混合，在这之前，你可能要经常来回跑到你的车上或购买售后主机进行测试。而现在，你可以使用 CarPlay Simulator，CarPlay 实际上是在你的 iPhone Device 上运行的，就像在汽车中一样。这意味着你现在可以很方便的在办公位上进行测试。
+* 在现有的 iPhone Simulator 内置的 CarPlay Window 上无法测试某些场景。例如，你需要测试你的 Navigation App 的语音指令是否与汽车的原生音频源（如 FM radio）正确混合，在这之前，你可能要经常来回跑到你的车上或购买售后市场主机进行测试。而现在，你可以使用 CarPlay Simulator，CarPlay 实际上是在你的 iPhone Device 上运行的，就像在汽车中一样。这意味着你现在可以很方便的在办公位上进行测试。
 * 你还可以使用 CarPlay Simulator 来测试多种不同配置的汽车，例如在不同尺寸的显示屏上进行测试。
 
 下面来介绍下 CarPlay Simulator 如何使用。它的窗口界面由 3 个部分组成：
