@@ -508,7 +508,7 @@ CPInformationTemplate 也是 iOS 14 中的新 template。CPInformationTemplate �
 
 本文对 CarPlay framework 在 iOS 14 中的更新内容做了简要的介绍。如果你的 app 类别是 CarPlay 所支持的，那么就从 import CarPlay framework 开始，让你的 app 在 CarPlay 中大放光彩！
 
-有关 CarPlay template 的更多信息，请查看 [CarPlay for developers](https://developer.apple.com/carplay/) 上更新的[《CarPlay app programming guide》](https://developer.apple.com/carplay/documentation/CarPlay-App-Programming-Guide.pdf)。在这个网站上，你还可以为你的 app 申请 CarPlay 权限，以及查看每个权限具体可以使用哪些 CarPlay template。
+有关 CarPlay 的更多信息，可以查看 [CarPlay for developers](https://developer.apple.com/carplay/) 上更新的[《CarPlay app programming guide》](https://developer.apple.com/carplay/documentation/CarPlay-App-Programming-Guide.pdf)。在这个网站上，你还可以为你的 app 申请 CarPlay 权限，以及查看每个权限具体可以使用哪些 CarPlay template。
 
 如果你需要将你的音频 CarPlay app 部署到 iOS 13 或更早版本中，建议你再次阅读 [MPPlayableContent API 说明文档](https://developer.apple.com/documentation/mediaplayer/mpplayablecontentmanager/)；如果你正在构建一个通信 CarPlay app，你的 app 必须使用 SiriKit，你可以在 CarPlay 开发网站上找到大量的说明文档和资源；如果你正在构建一个基于 template 的导航 CarPlay app，请观看 [WWDC18 - CarPlay 车载音频和导航 App](https://developer.apple.com/wwdc18/213)。
 
