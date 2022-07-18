@@ -98,6 +98,8 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
 
 CPListTemplate 是列表样式的 template。CPListItem 是组成 CPListTemplate 的一种基本单元。每个 CPListItem 都代表 CPListTemplate 中的一行，它们的关系就像 UITableViewCell 与 UITableView。
 
+![](https://cdn.nlark.com/yuque/0/2022/png/12376889/1658167088589-assets/web-upload/f885fa2d-3d66-49c6-bb15-d5c9e8426f6f.png)
+
 以下是创建一个 CPListTemplate 的示例代码：
 
 ```swift
@@ -110,8 +112,6 @@ let section = CPListSection(items: [item])
 let listTemplate = CPListTemplate(title: "Albums", sections: [section]) 
 self.interfaceController.pushTemplate(listTemplate, animated: true)
 ```
-
-![](https://cdn.nlark.com/yuque/0/2022/png/12376889/1658167088589-assets/web-upload/f885fa2d-3d66-49c6-bb15-d5c9e8426f6f.png)
 
 当用户点击一个 CPListItem 时，CPListItem 的属性 listItemHandler block 会被调用。listItemHandler block 接收两个参数，第一个是被点击的 listItem，第二个是 completion block。当一个 listItem 被点击时，你的 app 可能会执行一些任务，例如：
 
