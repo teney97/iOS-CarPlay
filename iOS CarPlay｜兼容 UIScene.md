@@ -179,20 +179,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 }
 ```
 
-#### TTScene: 用于获取场景
+#### 给 UIScene 添加扩展获取场景
 
 ```swift
 import UIKit
 import CarPlay
 
 @available(iOS 13.0, *)
-class TTScene: NSObject {
+extension UIScene {
 
-    static var connectedScenes: Set<UIScene> {
+    private static var connectedScenes: Set<UIScene> {
         UIApplication.shared.connectedScenes
     }
     
-    @objc static var main: UIWindowScene? {
+    static var main: UIWindowScene? {
         connectedScenes.first(where: { $0 is UIWindowScene }) as! UIWindowScene?
     }
     
@@ -202,7 +202,7 @@ class TTScene: NSObject {
 }
 ```
 
-#### UIWindow+SceneHook
+#### UIWindow
 
 使用 UIScene 后，UI 层级结构发生了一些变化，原本的 UIScreen 和 UIWindow 层中加入了一层 UIWindowScene。
 
@@ -217,37 +217,6 @@ class TTScene: NSObject {
 // If nil, window will not appear on any screen.
 // changing the UIWindowScene may be an expensive operation and should not be done in performance-sensitive code
 @property (nullable, nonatomic, weak) UIWindowScene *windowScene API_AVAILABLE(ios(13.0));
-```
-
-为了兼容旧代码，我们可以 hook UIView 的 initWithFrame: 方法，为 UIWindow 设置 windowScene。
-
-```objectivec
-@implementation UIView (SceneHook)
-
-+ (void)load {
-
-    if (@available(iOS 13.0, *)) {
-      
-        static dispatch_once_t onceToken;
-        dispatch_once(&onceToken, ^{
-            SEL selector = @selector(initWithFrame:);
-            Method method = class_getInstanceMethod(self, selector);
-            if (!method) {
-                NSAssert(NO, @"Method not found for [UIView initWithFrame:]");
-            }
-            IMP imp = method_getImplementation(method);
-            class_replaceMethod(self, selector, imp_implementationWithBlock(^(UIView *self, CGRect frame) {
-                ((UIView * (*)(UIView *, SEL, CGRect))imp)(self, selector, frame);
-                if ([self isKindOfClass:UIWindow.class]) {
-                    [(UIWindow *)self setWindowScene:TTScene.main];
-                }
-                return self;
-            }), method_getTypeEncoding(method));
-        });
-    }
-}
-
-@end
 ```
 
 #### 首次启动隐私弹窗适配
